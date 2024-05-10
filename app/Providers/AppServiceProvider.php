@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -29,5 +30,12 @@ class AppServiceProvider extends ServiceProvider
         Livewire::setScriptRoute(function ($handle) {
             return Route::get(''.env('APP_URL_LIVEWIRE', 'laravel/public').'/livewire/livewire.js', $handle);
         });
+
+        //Authorization Sidebar
+
+        Gate::define('prueba', function () {
+            return true;
+        });
+
     }
 }

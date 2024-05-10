@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -62,4 +63,32 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    //AdminLTE
+    public function adminlte_image()
+    {
+        //return 'https://picsum.photos/300/300';
+        //return "https://ui-avatars.com/api/?name=".Auth::user()->name."&color=7F9CF5&background=EBF4FF";
+        //return verImagen(auth()->user()->profile_photo_path, auth()->user()->name);
+        return verImagen(Auth::user()->profile_photo_path, true);
+    }
+
+    public function adminlte_desc()
+    {
+        return Auth::user()->email." [".verRole(Auth::user()->role, Auth::user()->roles_id)."]";
+    }
+
+    public function adminlte_profile_url()
+    {
+        return 'dashboard/perfil';
+    }
+
+    public function scopeBuscar($query, $keyword)
+    {
+        return $query->where('name', 'LIKE', "%$keyword%")
+            ->orWhere('email', 'LIKE', "%$keyword%")
+            ->orWhere('id', 'LIKE', "%$keyword%")
+            ;
+    }
+
 }
