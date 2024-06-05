@@ -1523,5 +1523,5 @@ MDI0LTAyLTExVDE2OjMwOjAwKzAxOjAwYK4uogAAAABJRU5ErkJggg==" />
     </div>
 </div>
 </body>
-@include('sweetalert::alert')
+{{--@include('sweetalert::alert')--}}
 </html>
