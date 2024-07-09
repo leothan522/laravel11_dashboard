@@ -15,7 +15,7 @@ return [
     */
 
     'title' => 'Morros Devops',
-    'title_prefix' => '',
+    'title_prefix' => ''.mb_strtoupper(env('APP_NAME', 'Laravel')).' | ',
     'title_postfix' => '',
 
     /*
@@ -116,7 +116,7 @@ return [
         'img' => [
             /*'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',*/
             'path' => 'img/preloader_171x171.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'alt' => '...',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
@@ -241,8 +241,8 @@ return [
     'right_sidebar' => true,
     'right_sidebar_icon' => 'fas fa-th-large',
     'right_sidebar_theme' => 'dark',
-    'right_sidebar_slide' => true,
-    'right_sidebar_push' => false,
+    'right_sidebar_slide' => false,
+    'right_sidebar_push' => true,
     'right_sidebar_scrollbar_theme' => 'os-theme-light',
     'right_sidebar_scrollbar_auto_hide' => 'l',
 
