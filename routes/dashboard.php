@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Middleware\UserAndroid;
+use App\Http\Middleware\UserPermisos;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,6 +15,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('perfil', function () {
-    return view('welcome');
-})->name('prueba');
+Route::get('/', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+Route::middleware([UserPermisos::class])->group(function (){
+
+    Route::get('perfil', function () {
+        return view('dashboard');
+    })->name('prueba');
+
+});
+
+Route::middleware([UserAndroid::class])->group(function (){
+    //rutas Dashboard para android
+});

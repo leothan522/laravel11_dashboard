@@ -28,6 +28,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'plataforma',
+        'estatus',
+        'role',
+        'roles_id',
+        'permisos',
+        'empresas_id',
+        'token_recuperacion',
+        'times_recuperacion'
     ];
 
     /**

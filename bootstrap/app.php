@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\UserAdmin;
+use App\Http\Middleware\UserEstatus;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,7 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            Route::middleware('web')
+            Route::middleware([
+                'web',
+                'auth:sanctum',
+                config('jetstream.auth_session'),
+                'verified',
+                UserAdmin::class,
+                UserEstatus::class
+            ])
                 ->prefix('dashboard/')
                 ->name('dashboard.')
                 ->group(base_path('routes/dashboard.php'));

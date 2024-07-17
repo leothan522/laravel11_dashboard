@@ -1,21 +1,18 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('web.index');
 
-Route::get('/perfil', function (){
+Route::middleware('auth')
+    ->get('/perfil', function (){
     return view('profile.show_default');
-})->name('web.perfil')->middleware('auth');
+})->name('web.perfil');
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
+Route::get('/cerrar', function () {
+    Auth::logout();
+    return redirect()->route('web.index');
+})->name('cerrar');
