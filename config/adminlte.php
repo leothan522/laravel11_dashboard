@@ -316,19 +316,19 @@ return [
         [
             'text'      => 'Configuración',
             'icon'      => 'fas fa-fw fa-cogs',
-            'can'       => ['prueba'],
+            'can'       => ['usuarios', 'parametros'],
             'submenu' => [
                 [
                     'text' => 'Usuarios',
                     'icon' => 'fas fa-fw fa-users-cog',
                     'route'  => 'dashboard.prueba',
-                    'can'  => 'prueba',
+                    'can'  => 'usuarios',
                 ],
                 [
                     'text' => 'Parametros',
                     'icon' => 'fas fa-fw fa-list',
-                    'route' => 'dashboard.prueba',
-                    'can' => 'prueba',
+                    'route' => 'dashboard.parametros',
+                    'can' => 'parametros',
                 ]
             ],
         ],

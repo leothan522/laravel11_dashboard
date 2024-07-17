@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\ParametrosController;
 use App\Http\Middleware\UserAndroid;
 use App\Http\Middleware\UserPermisos;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,8 @@ Route::middleware([UserPermisos::class])->group(function (){
     Route::get('perfil', function () {
         return view('dashboard');
     })->name('prueba');
+
+    Route::get('parametros', [ParametrosController::class, 'index'])->name('parametros');
 
 });
 

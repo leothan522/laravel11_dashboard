@@ -33,6 +33,14 @@ class AppServiceProvider extends ServiceProvider
 
         //Authorization Sidebar
 
+        Gate::define('usuarios', function ($user){
+            return comprobarPermisos('dashboard.usuarios');
+        });
+
+        Gate::define('parametros', function ($user){
+            return $user->role == 100;
+        });
+
         Gate::define('prueba', function () {
             return true;
         });
