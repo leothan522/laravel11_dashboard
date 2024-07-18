@@ -299,7 +299,7 @@ return [
         // Navbar items:
         [
             'type' => 'navbar-search',
-            'text' => 'search',
+            'text' => 'Buscar',
             'topnav_right' => true,
             'url'          => '#', // The url used to submit the data ('#' by default).
             'method'       => 'post',          // 'get' or 'post' ('get' by default).
@@ -321,7 +321,7 @@ return [
                 [
                     'text' => 'Usuarios',
                     'icon' => 'fas fa-fw fa-users-cog',
-                    'route'  => 'dashboard.prueba',
+                    'route'  => 'dashboard.usuarios',
                     'can'  => 'usuarios',
                 ],
                 [

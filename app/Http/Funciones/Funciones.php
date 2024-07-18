@@ -167,7 +167,6 @@ function numSizeCodigo(){
     return $default;
 }
 
-//funcion formato millares
 function formatoMillares($cantidad, $decimal = 2)
 {
     return number_format($cantidad, $decimal, ',', '.');

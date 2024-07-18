@@ -11,8 +11,3 @@ Route::middleware('auth')
     ->get('/perfil', function (){
     return view('profile.show_default');
 })->name('web.perfil');
-
-Route::get('/cerrar', function () {
-    Auth::logout();
-    return redirect()->route('web.index');
-})->name('cerrar');

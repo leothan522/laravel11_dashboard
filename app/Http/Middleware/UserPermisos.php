@@ -5,10 +5,12 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserPermisos
 {
+    use LivewireAlert;
     /**
      * Handle an incoming request.
      *
@@ -19,6 +21,7 @@ class UserPermisos
         if (comprobarPermisos(Route::currentRouteName())){
             return $next($request);
         }else{
+            $this->flash('warning', 'No tienes permisos suficientes.', []);
             return redirect()->route('dashboard.dashboard');
         }
     }

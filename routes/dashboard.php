@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Dashboard\ParametrosController;
+use App\Http\Controllers\Dashboard\UsuariosController;
 use App\Http\Middleware\UserAndroid;
 use App\Http\Middleware\UserPermisos;
 use Illuminate\Support\Facades\Route;
@@ -17,16 +18,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('dashboard');
+    return view('dashboard.index');
 })->name('dashboard');
 
 Route::middleware([UserPermisos::class])->group(function (){
 
-    Route::get('perfil', function () {
-        return view('dashboard');
-    })->name('prueba');
-
+    Route::get('perfil', [UsuariosController::class, 'perfil'])->name('perfil');
     Route::get('parametros', [ParametrosController::class, 'index'])->name('parametros');
+    Route::get('usuarios', [UsuariosController::class, 'index'])->name('usuarios');
+    Route::get('usuarios/export/{buscar?}', [UsuariosController::class, 'export'])->name('usuarios.excel');
 
 });
 

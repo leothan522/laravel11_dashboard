@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-json": "*",
         "hisorange/browser-detect": "^5.0",
         "intervention/image-laravel": "^1.2",
         "jantinnerezo/livewire-alert": "^3.0",
