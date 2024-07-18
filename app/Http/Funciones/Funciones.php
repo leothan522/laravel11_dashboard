@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 
 
+
 function hola(){
     return "Funciones Personalidas bien creada";
 }
@@ -363,4 +364,23 @@ function obtenerPorcentaje($cantidad, $total)
         return $porcentaje;
     }
     return 0;
+}
+
+function QRCodeGenerate($string = 'Hello World!', $path = false, $size = 100, $margin = 1)
+{
+    $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+        new \BaconQrCode\Renderer\RendererStyle\RendererStyle($size,$margin),
+        new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+    );
+    $writer = new \BaconQrCode\Writer($renderer);
+    $writer->writeFile($string, 'storage/qrcode.svg', '');
+
+    if ($path){
+        return asset('storage/qrcode.svg');
+    }
+
+    if (file_exists(public_path('storage/qrcode.svg'))){
+        return '<img src="'.asset('storage/qrcode.svg').'" alt="QRCode">';
+    }
+    return "QRCode";
 }
