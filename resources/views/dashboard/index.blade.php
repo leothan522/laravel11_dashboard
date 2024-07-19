@@ -11,6 +11,7 @@
     <div class="visible-print">
         {!! QRCodeGenerate("https://t.me/Leothan") !!}
         <p class="text-lightblue"><i class="fab fa-telegram"></i> Telegram</p>
+        <a href="{{ route('dashboard.pdf') }}" class="btn btn-default" target="_blank">Prueba Generar PDF</a>
     </div>
 @endsection
 

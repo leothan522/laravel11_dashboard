@@ -20,6 +20,9 @@
         <div class="card-tools">
             {{--<button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i>
             </button>--}}
+            <button type="button" class="btn btn-tool" wire:click="limpiar">
+                <i class="fas fa-sync-alt"></i>
+            </button>
             @if(/*!$nuevo*/true)
                 <button class="btn btn-tool" wire:click="create" @if(!comprobarPermisos('bienes.create')) disabled @endif id="btn_create_bien" >
                     <i class="fas fa-file"></i> Nuevo

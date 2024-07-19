@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\FcmController;
 use App\Http\Controllers\Dashboard\ParametrosController;
 use App\Http\Controllers\Dashboard\UsuariosController;
@@ -18,9 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('dashboard.index');
-})->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::middleware([UserPermisos::class])->group(function (){
 
@@ -29,6 +28,8 @@ Route::middleware([UserPermisos::class])->group(function (){
     Route::get('parametros', [ParametrosController::class, 'index'])->name('parametros');
     Route::get('usuarios', [UsuariosController::class, 'index'])->name('usuarios');
     Route::get('usuarios/export/{buscar?}', [UsuariosController::class, 'export'])->name('usuarios.excel');
+
+    Route::get('pdf/prueba', [DashboardController::class, 'pruebaGenerarPDF'])->name('pdf');
 
 });
 

@@ -3,7 +3,8 @@
         <h3 class="card-title">
             @if($keyword)
                 Busqueda { <b class="text-danger">{{ $keyword }}</b> }
-                <button class="btn btn-tool text-danger" wire:click="limpiar"><i class="fas fa-times-circle"></i>
+                <button class="btn btn-tool text-danger" wire:click="limpiar">
+                    <i class="fas fa-times-circle"></i>
                 </button>
             @else
                 Usuarios [ <b class="text-navy">{{ $rowsUsuarios }}</b> ]
@@ -11,6 +12,9 @@
         </h3>
 
         <div class="card-tools">
+            <button type="button" class="btn btn-tool" wire:click="limpiar">
+                <i class="fas fa-sync-alt"></i>
+            </button>
             @if(comprobarPermisos('usuarios.excel'))
                 <a href="{{ route('dashboard.usuarios.excel', $keyword) }}" class="btn btn-tool text-success swalDefaultInfo">
                     <i class="fas fa-file-excel"></i> <i class="fas fa-download"></i>

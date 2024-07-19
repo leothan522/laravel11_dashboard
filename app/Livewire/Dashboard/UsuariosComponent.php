@@ -67,6 +67,7 @@ class UsuariosComponent extends Component
             'edit_name', 'edit_email', 'edit_password', 'edit_role', 'edit_roles_id', 'created_at', 'estatus',
             'photo', 'empresas_id', 'rol_nombre', 'getPermisos', 'cambios'
         ]);
+        $this->resetErrorBag();
     }
 
     public function generarClave()
