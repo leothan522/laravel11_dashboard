@@ -6,8 +6,12 @@ use App\Models\Chat;
 use App\Models\ChatMessage;
 use App\Models\ChatUser;
 use App\Models\User;
+use App\Services\FirebaseCloudMessagingService;
 use Carbon\Carbon;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
+use Kreait\Firebase\Exception\FirebaseException;
+use Kreait\Firebase\Exception\MessagingException;
+use Kreait\Firebase\Messaging\CloudMessage;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -102,7 +106,7 @@ class ChatComponent extends Component
         $this->alert('success', 'Mensaje Enviado.');
     }
 
-    /*public function sendMessage($title, $body)
+    public function sendMessage($title, $body)
     {
         try {
             $this->messaging = FirebaseCloudMessagingService::connect();
@@ -123,7 +127,7 @@ class ChatComponent extends Component
         } catch (MessagingException|FirebaseException $e) {
             //mensaje en caso de error
         }
-    }*/
+    }
 
     public function show()
     {

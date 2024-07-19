@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\FcmController;
 use App\Http\Controllers\Dashboard\ParametrosController;
 use App\Http\Controllers\Dashboard\UsuariosController;
 use App\Http\Middleware\UserAndroid;
@@ -23,6 +24,7 @@ Route::get('/', function () {
 
 Route::middleware([UserPermisos::class])->group(function (){
 
+    Route::get('fcm', [FcmController::class, 'index'])->name('fcm');
     Route::get('perfil', [UsuariosController::class, 'perfil'])->name('perfil');
     Route::get('parametros', [ParametrosController::class, 'index'])->name('parametros');
     Route::get('usuarios', [UsuariosController::class, 'index'])->name('usuarios');

@@ -19,11 +19,11 @@
                     <i class="fas fa-comments"></i> Chat Directo
                 </a>
             </li>
-            {{--<li class="nav-item">
-                <a href="{{ route('fcm.index') }}" class="nav-link">
+            <li class="nav-item">
+                <a href="{{ route('dashboard.fcm') }}" class="nav-link">
                     <i class="fas fa-bell"></i> Cloud Messaging (FCM)
                 </a>
-            </li>--}}
+            </li>
         @endif
         {{--@if(Auth::user()->role == 100)
             <li class="dropdown-divider"></li>
