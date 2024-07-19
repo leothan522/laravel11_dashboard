@@ -83,27 +83,31 @@ class ParametrosComponent extends Component
             $message = "Parametro Actualizado";
         }
 
-        $parametro->nombre = $this->nombre;
-        if (!empty($this->tabla_id)){
-            $parametro->tabla_id = $this->tabla_id;
-        }
-        if (!empty($this->valor)){
-            $parametro->valor = $this->valor;
-        }
-        $parametro->save();
+        if ($parametro){
+            $parametro->nombre = $this->nombre;
+            if (!empty($this->tabla_id)){
+                $parametro->tabla_id = $this->tabla_id;
+            }
+            if (!empty($this->valor)){
+                $parametro->valor = $this->valor;
+            }
+            $parametro->save();
 
-        $this->alert($type, $message);
+            $this->alert($type, $message);
+        }
         $this->limpiar();
     }
 
     public function edit($id)
     {
         $parametro = Parametro::find($id);
-        $this->parametro_id = $parametro->id;
-        $this->nombre = $parametro->nombre;
-        $this->tabla_id = $parametro->tabla_id;
-        $this->valor = $parametro->valor;
-        $this->view = "edit";
+        if ($parametro){
+            $this->parametro_id = $parametro->id;
+            $this->nombre = $parametro->nombre;
+            $this->tabla_id = $parametro->tabla_id;
+            $this->valor = $parametro->valor;
+            $this->view = "edit";
+        }
     }
 
     #[On('buscar')]
@@ -130,9 +134,11 @@ class ParametrosComponent extends Component
     public function confirmed()
     {
         $parametro = Parametro::find($this->parametro_id);
-        $parametro->delete();
-        $this->limpiar();
-        $this->alert('success', 'Parametro Eliminado.');
+        if ($parametro){
+            $parametro->delete();
+            $this->limpiar();
+            $this->alert('success', 'Parametro Eliminado.');
+        }
     }
 
 }

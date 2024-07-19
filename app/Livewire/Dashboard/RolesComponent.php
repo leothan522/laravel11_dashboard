@@ -67,31 +67,37 @@ class RolesComponent extends Component
             $parametro = new Parametro();
         }
 
-        $parametro->nombre = $nombre;
-        $parametro->tabla_id = -1;
-        $parametro->save();
+        if ($parametro){
+            $parametro->nombre = $nombre;
+            $parametro->tabla_id = -1;
+            $parametro->save();
 
-        if ($this->roles_id){
-            $this->dispatch('setRolList', id:$parametro->id, nombre:ucwords($parametro->nombre));
-            $this->edit($parametro->id);
-            $this->alert('success', 'Rol Actualizado.');
+            if ($this->roles_id){
+                $this->dispatch('setRolList', id:$parametro->id, nombre:ucwords($parametro->nombre));
+                $this->edit($parametro->id);
+                $this->alert('success', 'Rol Actualizado.');
+            }else{
+                $this->dispatch('addRoleList', id:$parametro->id, nombre:ucwords($parametro->nombre), rows:$count + 1);
+                $this->limpiarRoles();
+                $this->alert('success', 'Rol Creado.');
+            }
         }else{
-            $this->dispatch('addRoleList', id:$parametro->id, nombre:ucwords($parametro->nombre), rows:$count + 1);
-            $this->limpiarRoles();
-            $this->alert('success', 'Rol Creado.');
+            $this->dispatch('removeRolList', id: $this->roles_id);
         }
-
-        $this->dispatch('limpiar');
     }
 
     #[On('edit')]
     public function edit($id)
     {
         $rol = Parametro::find($id);
-        $this->roles_id = $rol->id;
-        $this->nombre = $rol->nombre;
-        $this->getPermisos = $rol->valor;
-        $this->reset('cambios');
+        if ($rol){
+            $this->roles_id = $rol->id;
+            $this->nombre = $rol->nombre;
+            $this->getPermisos = $rol->valor;
+            $this->reset('cambios');
+        }else{
+            $this->dispatch('removeRolList', id: $id);
+        }
     }
 
     public function destroy($id)
@@ -112,34 +118,38 @@ class RolesComponent extends Component
     public function confirmedRol()
     {
         $row = Parametro::find($this->roles_id);
-        $id = $row->id;
+        if ($row){
+            $id = $row->id;
 
-        //codigo para verificar si realmente se puede borrar, dejar false si no se requiere validacion
-        $vinculado = false;
-        $usuarios = User::where('roles_id', $id)->first();
-        if ($usuarios){
-            $vinculado = true;
-        }
+            //codigo para verificar si realmente se puede borrar, dejar false si no se requiere validacion
+            $vinculado = false;
+            $usuarios = User::where('roles_id', $id)->first();
+            if ($usuarios){
+                $vinculado = true;
+            }
 
-        if ($vinculado) {
-            $this->alert('warning', '¡No se puede Borrar!', [
-                'position' => 'center',
-                'timer' => '',
-                'toast' => false,
-                'text' => 'El registro que intenta borrar ya se encuentra vinculado con otros procesos.',
-                'showConfirmButton' => true,
-                'onConfirmed' => '',
-                'confirmButtonText' => 'OK',
-            ]);
-        } else {
-            $row->delete();
-            $this->limpiarRoles();
-            $this->dispatch('removeRolList', id: $id);
-            $this->alert(
-                'success',
-                'Rol Eliminado.'
-            );
+            if ($vinculado) {
+                $this->alert('warning', '¡No se puede Borrar!', [
+                    'position' => 'center',
+                    'timer' => '',
+                    'toast' => false,
+                    'text' => 'El registro que intenta borrar ya se encuentra vinculado con otros procesos.',
+                    'showConfirmButton' => true,
+                    'onConfirmed' => '',
+                    'confirmButtonText' => 'OK',
+                ]);
+            } else {
+                $row->delete();
+                $this->limpiarRoles();
+                $this->dispatch('removeRolList', id: $id);
+                $this->alert(
+                    'success',
+                    'Rol Eliminado.'
+                );
 
+            }
+        }else{
+            $this->dispatch('removeRolList', id: $this->roles_id);
         }
     }
 
@@ -179,16 +189,20 @@ class RolesComponent extends Component
 
     public function savePermisos(){
         $rol = Parametro::find($this->roles_id);
-        $rol->valor = $this->getPermisos;
-        $rol->save();
-        $usuarios = User::where('roles_id', $rol->id)->get();
-        foreach ($usuarios as $user){
-            $usuario = User::find($user->id);
-            $usuario->permisos = $this->getPermisos;
-            $usuario->save();
+        if ($rol){
+            $rol->valor = $this->getPermisos;
+            $rol->save();
+            $usuarios = User::where('roles_id', $rol->id)->get();
+            foreach ($usuarios as $user){
+                $usuario = User::find($user->id);
+                $usuario->permisos = $this->getPermisos;
+                $usuario->save();
+            }
+            $this->reset('cambios');
+            $this->alert('success', 'Permisos Guardados.');
+        }else{
+            $this->dispatch('removeRolList', id: $this->roles_id);
         }
-        $this->reset('cambios');
-        $this->alert('success', 'Permisos Guardados.');
     }
 
     public function deletePermisos()

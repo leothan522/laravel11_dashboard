@@ -128,22 +128,26 @@ class UsuariosComponent extends Component
         } else {
             //editar
             $usuarios = User::find($this->usuarios_id);
-            $usuarios->name = ucwords($this->edit_name);
-            $usuarios->email = strtolower($this->edit_email);
-            if ($this->edit_role > 1) {
-                $usuarios->role = 2;
-                $usuarios->roles_id = $this->edit_role;
-                $role = Parametro::where('tabla_id', '-1')->where('id', $this->edit_role)->first();
-                if ($role) {
-                    $usuarios->permisos = $role->valor;
+            if ($usuarios){
+                $usuarios->name = ucwords($this->edit_name);
+                $usuarios->email = strtolower($this->edit_email);
+                if ($this->edit_role > 1) {
+                    $usuarios->role = 2;
+                    $usuarios->roles_id = $this->edit_role;
+                    $role = Parametro::where('tabla_id', '-1')->where('id', $this->edit_role)->first();
+                    if ($role) {
+                        $usuarios->permisos = $role->valor;
+                    }
+                } else {
+                    $usuarios->role = $this->edit_role;
+                    $usuarios->roles_id = null;
                 }
-            } else {
-                $usuarios->role = $this->edit_role;
-                $usuarios->roles_id = null;
+                $usuarios->save();
+                $this->edit($this->usuarios_id);
+                $this->alert('success', 'Usuario Actualizado.');
+            }else{
+                $this->dispatch('cerrarModal');
             }
-            $usuarios->save();
-            $this->edit($this->usuarios_id);
-            $this->alert('success', 'Usuario Actualizado.');
         }
     }
 
@@ -151,56 +155,62 @@ class UsuariosComponent extends Component
     {
         $this->limpiar();
         $usuario = User::find($id);
-        $this->usuarios_id = $usuario->id;
-        $this->edit_name = $usuario->name;
-        $this->edit_email = $usuario->email;
-        if ($usuario->roles_id) {
-            $this->edit_role = $usuario->roles_id;
+        if ($usuario){
+            $this->usuarios_id = $usuario->id;
+            $this->edit_name = $usuario->name;
+            $this->edit_email = $usuario->email;
+            if ($usuario->roles_id) {
+                $this->edit_role = $usuario->roles_id;
+            }else{
+                $this->edit_role = $usuario->role;
+            }
+            $this->edit_roles_id = $usuario->roles_id;
+            $this->estatus = $usuario->estatus;
+            $this->created_at = $usuario->created_at;
+            $this->photo = $usuario->profile_photo_path;
+            /*$this->empresas_id = $usuario->empresas_id;*/
+            $this->rol_nombre = verRole($usuario->role, $usuario->roles_id);
+            $this->getPermisos = $usuario->permisos;
         }else{
-            $this->edit_role = $usuario->role;
+            $this->dispatch('cerrarModal');
         }
-        $this->edit_roles_id = $usuario->roles_id;
-        $this->estatus = $usuario->estatus;
-        $this->created_at = $usuario->created_at;
-        $this->photo = $usuario->profile_photo_path;
-        /*$this->empresas_id = $usuario->empresas_id;*/
-        $this->rol_nombre = verRole($usuario->role, $usuario->roles_id);
-        $this->getPermisos = $usuario->permisos;
     }
 
     public function cambiarEstatus($id)
     {
         $usuario = User::find($id);
-        if ($usuario->estatus) {
-            $usuario->estatus = 0;
-            $texto = "Usuario Suspendido";
-        } else {
-            $usuario->estatus = 1;
-            $texto = "Usuario Activado";
+        if ($usuario){
+            if ($usuario->estatus) {
+                $usuario->estatus = 0;
+                $texto = "Usuario Suspendido";
+            } else {
+                $usuario->estatus = 1;
+                $texto = "Usuario Activado";
+            }
+            $usuario->update();
+            $this->estatus = $usuario->estatus;
+            $this->alert('success', $texto);
+        }else{
+            $this->dispatch('cerrarModal');
         }
-        $usuario->update();
-        $this->estatus = $usuario->estatus;
-        $this->alert(
-            'success',
-            $texto
-        );
     }
 
     public function restablecerClave($id)
     {
-        if (!$this->edit_password) {
-            $clave = Str::password(8);
-        } else {
-            $clave = $this->edit_password;
-        }
         $usuario = User::find($id);
-        $usuario->password = Hash::make($clave);
-        $usuario->update();
-        $this->edit_password = $clave;
-        $this->alert(
-            'success',
-            'Contraseña Restablecida'
-        );
+        if ($usuario){
+            if (!$this->edit_password) {
+                $clave = Str::password(8);
+            } else {
+                $clave = $this->edit_password;
+            }
+            $usuario->password = Hash::make($clave);
+            $usuario->update();
+            $this->edit_password = $clave;
+            $this->alert('success', 'Contraseña Restablecida');
+        }else{
+            $this->dispatch('cerrarModal');
+        }
     }
 
     public function destroy($id)
@@ -221,30 +231,32 @@ class UsuariosComponent extends Component
     public function confirmedUser()
     {
         $usuario = User::find($this->usuarios_id);
+        if ($usuario){
+            //codigo para verificar si realmente se puede borrar, dejar false si no se requiere validacion
+            $vinculado = false;
 
-        //codigo para verificar si realmente se puede borrar, dejar false si no se requiere validacion
-        $vinculado = false;
-
-        if ($vinculado) {
-            $this->alert('warning', '¡No se puede Borrar!', [
-                'position' => 'center',
-                'timer' => '',
-                'toast' => false,
-                'text' => 'El registro que intenta borrar ya se encuentra vinculado con otros procesos.',
-                'showConfirmButton' => true,
-                'onConfirmed' => '',
-                'confirmButtonText' => 'OK',
-            ]);
-        } else {
-            $usuario->delete();
-            $this->limpiar();
+            if ($vinculado) {
+                $this->alert('warning', '¡No se puede Borrar!', [
+                    'position' => 'center',
+                    'timer' => '',
+                    'toast' => false,
+                    'text' => 'El registro que intenta borrar ya se encuentra vinculado con otros procesos.',
+                    'showConfirmButton' => true,
+                    'onConfirmed' => '',
+                    'confirmButtonText' => 'OK',
+                ]);
+            } else {
+                $usuario->delete();
+                $this->limpiar();
+                $this->dispatch('cerrarModal');
+                $this->alert(
+                    'success',
+                    'Usuario Eliminado.'
+                );
+            }
+        }else{
             $this->dispatch('cerrarModal');
-            $this->alert(
-                'success',
-                'Usuario Eliminado.'
-            );
         }
-
     }
 
     #[On('buscar')]
@@ -279,10 +291,12 @@ class UsuariosComponent extends Component
 
     public function savePermisos(){
         $usuario = User::find($this->usuarios_id);
-        $usuario->permisos = $this->getPermisos;
-        $usuario->save();
-        $this->reset('cambios');
-        $this->alert('success', 'Permisos Guardados.');
+        if ($usuario){
+            $usuario->permisos = $this->getPermisos;
+            $usuario->save();
+            $this->reset('cambios');
+            $this->alert('success', 'Permisos Guardados.');
+        }
     }
 
     public function deletePermisos()
