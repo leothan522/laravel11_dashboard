@@ -323,4 +323,10 @@ class UsuariosComponent extends Component
         return $status[$i];
     }
 
+    #[On('actualizar')]
+    public function actualizar()
+    {
+        //JS
+    }
+
 }

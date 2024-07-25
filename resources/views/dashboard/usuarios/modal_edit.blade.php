@@ -184,7 +184,7 @@
 
             {!! verSpinner() !!}
 
-            <div class="modal-footer row col-12 justify-content-between">
+            <div class="modal-footer {{--row col-12--}} justify-content-between">
                 <button type="button" class="btn btn-danger btn-sm" wire:click="destroy({{ $usuarios_id }})"
                         @if(!comprobarPermisos('usuarios.destroy') || !($edit_role != 1 || ($edit_role == 1 && comprobarPermisos())) || ($usuarios_id == auth()->id())) disabled @endif >
                     <i class="fas fa-trash-alt"></i>

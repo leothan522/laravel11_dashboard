@@ -53,6 +53,7 @@
 
             $('#div_listar_roles').append(boton);
             $('#span_roles_rows').text(rows);
+            Livewire.dispatch('actualizar');
         });
 
         function showRol(id){
@@ -62,12 +63,14 @@
 
         Livewire.on('setRolList', ({ id, nombre }) => {
             $('#button_role_id_' + id).text(nombre);
+            Livewire.dispatch('actualizar');
         });
 
         Livewire.on('removeRolList', ({ id }) =>{
             Livewire.dispatch('limpiar');
             $('#button_role_id_' + id).addClass('d-none');
             $('#button_rol_modal_cerrar').click();
+            Livewire.dispatch('actualizar');
         });
 
         Livewire.on('cerrarModal', () => {

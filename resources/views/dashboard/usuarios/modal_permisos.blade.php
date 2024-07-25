@@ -27,7 +27,7 @@
                 @endif
 
             </div>
-            <div class="modal-footer row col-12 justify-content-between">
+            <div class="modal-footer {{--row col-12--}} justify-content-between">
                 <button type="button" class="btn btn-default btn-sm" wire:click="deletePermisos">
                     <i class="fas fa-trash-alt"></i> Quitar Todos
                 </button>

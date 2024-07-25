@@ -68,6 +68,7 @@ class RolesComponent extends Component
         }
 
         if ($parametro){
+
             $parametro->nombre = $nombre;
             $parametro->tabla_id = -1;
             $parametro->save();
@@ -81,6 +82,7 @@ class RolesComponent extends Component
                 $this->limpiarRoles();
                 $this->alert('success', 'Rol Creado.');
             }
+
         }else{
             $this->dispatch('removeRolList', id: $this->roles_id);
         }
