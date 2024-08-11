@@ -1,7 +1,6 @@
 <div class="row justify-content-center">
 
     <div class="col-md-4 col-lg-3">
-        @include('dashboard.parametros.form')
         <label>Parametros Manuales</label>
         <ul>
             <li>numRowsPaginate[null|numero]</li>
@@ -14,6 +13,7 @@
 
     <div class="col-md-8 col-lg-9">
         @include('dashboard.parametros.table')
+        @include('dashboard.parametros.modal')
     </div>
 
 </div>

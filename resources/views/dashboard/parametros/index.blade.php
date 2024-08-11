@@ -11,7 +11,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     {{--<li class="breadcrumb-item"><a href="#">Home</a></li>--}}
-                    <li class="breadcrumb-item active">Parametros del Sistema</li>
+                    <li class="breadcrumb-item active d-none d-md-block">Parametros del Sistema</li>
                 </ol>
             </div>
         </div>
@@ -37,6 +37,11 @@
 @section('js')
     <script src="{{ asset("js/app.js") }}"></script>
     <script>
+
+        Livewire.on('cerrarModal', () => {
+            $('#btn_modal_default').click();
+        });
+
         function search(){
             let input = $("#navbarSearch");
             let keyword  = input.val();
