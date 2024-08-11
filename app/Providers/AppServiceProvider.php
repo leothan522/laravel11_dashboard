@@ -41,8 +41,8 @@ class AppServiceProvider extends ServiceProvider
             return $user->role == 100;
         });
 
-        Gate::define('prueba', function () {
-            return true;
+        Gate::define('pruebas', function ($user) {
+            return $user->role == 100;
         });
 
     }
