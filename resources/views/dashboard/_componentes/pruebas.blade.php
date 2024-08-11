@@ -19,7 +19,7 @@
 @endsection
 
 @section('content')
-    @include('dashboard._componentes.pruebas_content')
+    @livewire('dashboard.pruebas-component')
 @endsection
 
 @section('right-sidebar')

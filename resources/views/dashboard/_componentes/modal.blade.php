@@ -3,7 +3,7 @@
 </button>--}}
 
 <div wire:ignore.self class="modal fade" id="modal-default" xmlns:wire="http://www.w3.org/1999/xhtml">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content {{--fondo--}}">
             <div class="modal-header">
                 <h4 class="modal-title">Default Modal</h4>
