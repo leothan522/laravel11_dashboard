@@ -48,8 +48,8 @@ class RolesComponent extends Component
             return [];
         }
 
-        if (strlen($nombre) >= 15) {
-            $this->alert('warning', 'el campo nombre solo puede tener 15 caracteres.');
+        if (strlen($nombre) >= 20) {
+            $this->alert('warning', 'el campo nombre solo puede tener 20 caracteres.');
             return [];
         }
 
@@ -84,7 +84,8 @@ class RolesComponent extends Component
             }
 
         }else{
-            $this->dispatch('removeRolList', id: $this->roles_id);
+            $parametros = Parametro::where('tabla_id', -1)->count();
+            $this->dispatch('removeRolList', id: $this->roles_id, rows: $parametros - 1);
         }
     }
 
@@ -98,7 +99,8 @@ class RolesComponent extends Component
             $this->getPermisos = $rol->valor;
             $this->reset('cambios');
         }else{
-            $this->dispatch('removeRolList', id: $id);
+            $parametros = Parametro::where('tabla_id', -1)->count();
+            $this->dispatch('removeRolList', id: $id, rows: $parametros - 1);
         }
     }
 
@@ -119,6 +121,7 @@ class RolesComponent extends Component
     #[On('confirmedRol')]
     public function confirmedRol()
     {
+        $parametros = Parametro::where('tabla_id', -1)->count();
         $row = Parametro::find($this->roles_id);
         if ($row){
             $id = $row->id;
@@ -143,15 +146,12 @@ class RolesComponent extends Component
             } else {
                 $row->delete();
                 $this->limpiarRoles();
-                $this->dispatch('removeRolList', id: $id);
-                $this->alert(
-                    'success',
-                    'Rol Eliminado.'
-                );
+                $this->dispatch('removeRolList', id: $id, rows: $parametros - 1);
+                $this->alert('success', 'Rol Eliminado.');
 
             }
         }else{
-            $this->dispatch('removeRolList', id: $this->roles_id);
+            $this->dispatch('removeRolList', id: $this->roles_id , rows: $parametros - 1);
         }
     }
 
@@ -168,7 +168,7 @@ class RolesComponent extends Component
     }
 
     #[On('removeRolList')]
-    public function removeRolList($id)
+    public function removeRolList($id, $rows)
     {
         //elimino a un rol del right-sidebar
     }
@@ -203,7 +203,8 @@ class RolesComponent extends Component
             $this->reset('cambios');
             $this->alert('success', 'Permisos Guardados.');
         }else{
-            $this->dispatch('removeRolList', id: $this->roles_id);
+            $parametros = Parametro::where('tabla_id', -1)->count();
+            $this->dispatch('removeRolList', id: $this->roles_id, rows: $parametros - 1);
         }
     }
 
