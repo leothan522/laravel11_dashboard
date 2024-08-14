@@ -31,6 +31,10 @@
     <script src="{{ asset("js/app.js") }}"></script>
     <script>
 
+        $(document).ready(function () {
+            $('#navbar_search_id').addClass('d-none');
+        });
+
         function search(){
             let input = $("#navbarSearch");
             let keyword  = input.val();
