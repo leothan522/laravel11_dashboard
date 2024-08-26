@@ -18,7 +18,7 @@ class UsuariosComponent extends Component
     public $rows = 0, $numero = 14, $tableStyle = false;
     public $view = "create", $keyword;
     public $name, $email, $password, $role, $usuarios_id;
-    public $edit_name, $edit_email, $edit_password, $edit_role = 0, $edit_roles_id = 0, $created_at, $estatus = 1, $photo, $empresas_id;
+    public $edit_name, $edit_email, $edit_password, $edit_role = 0, $edit_roles_id = 0, $created_at, $estatus = 1, $photo;
     public $rol_nombre, $tabla = 'usuarios', $getPermisos, $cambios = false;
 
     public function mount()
@@ -31,11 +31,13 @@ class UsuariosComponent extends Component
         $roles = Parametro::where('tabla_id', '-1')->get();
 
         $users = User::buscar($this->keyword)
-            ->orderBy('role', 'DESC')
-            ->orderBy('roles_id', 'DESC')
+            /*->orderBy('role', 'DESC')
+            ->orderBy('roles_id', 'DESC')*/
             ->orderBy('created_at', 'DESC')
             ->limit($this->rows)
             ->get();
+
+        $total = User::buscar($this->keyword)->count();
 
         $rows = User::count();
 
@@ -46,7 +48,8 @@ class UsuariosComponent extends Component
         return view('livewire.dashboard.usuarios-component')
             ->with('listarRoles', $roles)
             ->with('listarUsers', $users)
-            ->with('rowsUsuarios', $rows);
+            ->with('rowsUsuarios', $rows)
+            ->with('totalBusqueda', $total);
     }
 
     public function setLimit()
@@ -63,9 +66,9 @@ class UsuariosComponent extends Component
     public function limpiar()
     {
         $this->reset([
-            'view', 'keyword', 'name', 'email', 'password', 'role', 'usuarios_id',
+            'view', 'name', 'email', 'password', 'role', 'usuarios_id',
             'edit_name', 'edit_email', 'edit_password', 'edit_role', 'edit_roles_id', 'created_at', 'estatus',
-            'photo', 'empresas_id', 'rol_nombre', 'getPermisos', 'cambios'
+            'photo', 'rol_nombre', 'getPermisos', 'cambios'
         ]);
         $this->resetErrorBag();
     }
@@ -124,6 +127,7 @@ class UsuariosComponent extends Component
                 $usuarios->roles_id = null;
             }
             $usuarios->save();
+            $this->reset('keyword');
             $this->limpiar();
             $this->dispatch('cerrarModal', selector: 'btn_modal_default_create');
             $this->alert('success', 'Usuario Creado.');
@@ -170,9 +174,9 @@ class UsuariosComponent extends Component
             $this->estatus = $usuario->estatus;
             $this->created_at = $usuario->created_at;
             $this->photo = $usuario->profile_photo_path;
-            /*$this->empresas_id = $usuario->empresas_id;*/
             $this->rol_nombre = verRole($usuario->role, $usuario->roles_id);
             $this->getPermisos = $usuario->permisos;
+
         }else{
             $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
         }
@@ -330,6 +334,10 @@ class UsuariosComponent extends Component
         //JS
     }
 
-
+    public function cerrarBusqueda()
+    {
+        $this->reset(['keyword']);
+        $this->limpiar();
+    }
 
 }
