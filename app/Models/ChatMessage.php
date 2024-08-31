@@ -10,7 +10,7 @@ class ChatMessage extends Model
 {
     use HasFactory;
     protected $table = "chats_messages";
-    protected $fillable = ['users_id', 'chats_id', 'message'];
+    protected $fillable = ['users_id', 'chats_id', 'message', 'rowquid'];
 
     public function chat(): BelongsTo
     {

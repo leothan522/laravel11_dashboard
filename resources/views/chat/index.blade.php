@@ -43,6 +43,10 @@
             setInterval(refresh, 5000);
         });
 
+        Livewire.on('cerrarModal', () => {
+            $('#btn_cerrar_modal_info_user').click();
+        });
+
         console.log('Hi!')
     </script>
 @endsection

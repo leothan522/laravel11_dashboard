@@ -10,7 +10,7 @@ class Chat extends Model
 {
     use HasFactory;
     protected $table = "chats";
-    protected $fillable = ['tipo'];
+    protected $fillable = ['tipo', 'rowquid'];
 
     public function users(): HasMany
     {
