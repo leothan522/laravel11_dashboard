@@ -35,6 +35,8 @@ class RolesComponent extends Component
     {
         if (!is_null($nombre)){
 
+			$this->reset(['roles_id']);
+
             $nombre = mb_strtolower($nombre);
 
             $count = Parametro::where('tabla_id', -1)->count();
@@ -103,6 +105,7 @@ class RolesComponent extends Component
     #[On('edit')]
     public function edit($rowquid)
     {
+        $this->limpiarRoles();
         $rol = $this->getRol($rowquid);
         if ($rol){
             $this->roles_id = $rol->id;
