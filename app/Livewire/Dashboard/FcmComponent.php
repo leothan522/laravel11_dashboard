@@ -17,13 +17,18 @@ class FcmComponent extends Component
     use LivewireAlert;
 
     public $title, $body, $fcm_token = "todos", $fcm_tipo;
-    private $messaging;
 
     public function render()
     {
         $users = User::where('fcm_token', '!=', null)->get();
         return view('livewire.dashboard.fcm-component')
             ->with('listarUsers', $users);
+    }
+
+    public function limpiar()
+    {
+        $this->reset(['title', 'body', 'fcm_token', 'fcm_tipo']);
+        $this->resetErrorBag();
     }
 
     protected $rules = [
@@ -37,7 +42,7 @@ class FcmComponent extends Component
         $this->validate();
         try {
 
-            $this->messaging = FirebaseCloudMessagingService::connect();
+            $messaging = FirebaseCloudMessagingService::connect();
 
             $notificacion = Notification::fromArray([
                 'title' => $this->title,
@@ -60,7 +65,7 @@ class FcmComponent extends Component
                     $message = CloudMessage::withTarget('token', $this->fcm_token)
                         ->withData($data);
                 }
-                $this->messaging->send($message);
+                $messaging->send($message);
 
             } else {
 
@@ -73,7 +78,7 @@ class FcmComponent extends Component
                         $message = CloudMessage::withTarget('token', $user->fcm_token)
                             ->withData($data);
                     }
-                    $this->messaging->send($message);
+                    $messaging->send($message);
                 }
 
             }

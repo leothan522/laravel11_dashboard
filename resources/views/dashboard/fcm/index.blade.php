@@ -24,26 +24,27 @@
     <script src="{{ asset("js/app.js") }}"></script>
     <script>
 
-        function buscar(){
-            let input = $("#navbarSearch");
-            let keyword  = input.val();
-            if (keyword.length > 0){
-                input.blur();
-                alert('Falta vincular con el componente Livewire');
-                //Livewire.emit('increment', keyword);
-            }
-            return false;
-        }
+        $(document).ready(function () {
+            $('#navbar_search_id').addClass('d-none');
+        });
 
         $('#fcm_token_users').select2({
             theme: 'bootstrap4',
             language: "es"
-        })
+        });
 
         $('#fcm_token_users').on('change', function () {
             let token = $(this).val();
             Livewire.dispatch('tokenSeleccionado', { token:token });
         });
+
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+        });
+
+        function cancelar() {
+            $('#fcm_token_users').val('todos').trigger('change');
+        }
 
         console.log('Hi!');
     </script>

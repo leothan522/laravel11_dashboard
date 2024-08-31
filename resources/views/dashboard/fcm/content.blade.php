@@ -6,7 +6,7 @@
                     Firebase Cloud Messaging (FCM)
                 </h3>
                 <div class="card-tools">
-                    <button type="button" class="btn btn-tool" {{--wire:click="limpiar"--}}>
+                    <button type="button" class="btn btn-tool" wire:click="limpiar" onclick="cancelar()">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
