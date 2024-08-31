@@ -35,7 +35,8 @@ class User extends Authenticatable
         'permisos',
         'empresas_id',
         'token_recuperacion',
-        'times_recuperacion'
+        'times_recuperacion',
+        'rowquid'
     ];
 
     /**
