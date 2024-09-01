@@ -93,7 +93,7 @@
                     </div>
 
                     <div class="form-group">
-                        <input type="submit" class="btn btn-block btn-success" value="Guardar">
+                        <input type="submit" class="btn btn-block btn-primary" value="Enviar">
                     </div>
 
                 </form>

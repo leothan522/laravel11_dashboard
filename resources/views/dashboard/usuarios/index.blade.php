@@ -41,7 +41,7 @@
 @endsection
 
 @section('css')
-    {{--<link rel="stylesheet" href="/css/admin_custom.css">--}}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 @stop
 
 @section('js')
@@ -146,18 +146,6 @@
             // te muestra un array de todos los seleccionados
             //console.log(val);
         });
-
-
-        function search(){
-            let input = $("#navbarSearch");
-            let keyword  = input.val();
-            if (keyword.length > 0){
-                input.blur();
-                //alert('Falta vincular con el componente Livewire');
-                Livewire.dispatch('buscar', { keyword:keyword });
-            }
-            return false;
-        }
 
         console.log('Hi!');
     </script>

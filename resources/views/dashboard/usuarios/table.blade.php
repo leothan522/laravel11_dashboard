@@ -7,7 +7,7 @@
                     <i class="fas fa-times-circle"></i>
                 </button>
             @else
-                Usuarios [ <b class="text-warning">{{ $rowsUsuarios }}</b> ]
+                Registrados [ <b class="text-warning">{{ $rowsUsuarios }}</b> ]
             @endif
         </h3>
 
