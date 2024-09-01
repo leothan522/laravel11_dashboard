@@ -55,7 +55,7 @@
                     <tr>
                         <td class="text-center">
                             @if($user->plataforma)
-                                <i class="fas fa-mobile"></i>
+                                <i class="fas fa-mobile-alt"></i>
                             @else
                                 <i class="fas fa-desktop"></i>
                             @endif

@@ -24,6 +24,11 @@
                     <i class="fas fa-bell"></i> Cloud Messaging (FCM)
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ env('APP_URL_ANDROID', '/android') }}" class="nav-link" target="_blank">
+                    <i class="fas fa-mobile-alt mr-2"></i> API Android
+                </a>
+            </li>
         @endif
         {{--@if(Auth::user()->role == 100)
             <li class="dropdown-divider"></li>
