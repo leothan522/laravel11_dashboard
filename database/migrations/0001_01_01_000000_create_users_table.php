@@ -27,8 +27,7 @@ return new class extends Migration
             $table->integer('role')->default(0);
             $table->bigInteger('roles_id')->unsigned()->nullable();
             $table->text('permisos')->nullable();
-            $table->text('empresas_id')->nullable();
-            $table->text('fcm_token')->nullable();
+            //$table->text('fcm_token')->nullable();
             $table->text('token_recuperacion')->nullable();
             $table->timestamp('times_recuperacion')->nullable();
             $table->timestamps();

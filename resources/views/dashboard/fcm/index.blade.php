@@ -28,12 +28,12 @@
             $('#navbar_search_id').addClass('d-none');
         });
 
-        $('#fcm_token_users').select2({
+        $('#dispositivos_users').select2({
             theme: 'bootstrap4',
             language: "es"
         });
 
-        $('#fcm_token_users').on('change', function () {
+        $('#dispositivos_users').on('change', function () {
             let token = $(this).val();
             Livewire.dispatch('tokenSeleccionado', { token:token });
         });
@@ -43,7 +43,7 @@
         });
 
         function cancelar() {
-            $('#fcm_token_users').val('todos').trigger('change');
+            $('#dispositivos_users').val('todos').trigger('change');
         }
 
         console.log('Hi!');

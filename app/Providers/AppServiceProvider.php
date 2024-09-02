@@ -45,5 +45,9 @@ class AppServiceProvider extends ServiceProvider
             return $user->role == 100;
         });
 
+        Gate::define('fcm', function ($user) {
+            return $user->role == 100;
+        });
+
     }
 }

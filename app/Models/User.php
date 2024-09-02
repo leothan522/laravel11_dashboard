@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,6 @@ class User extends Authenticatable
         'role',
         'roles_id',
         'permisos',
-        'empresas_id',
         'token_recuperacion',
         'times_recuperacion',
         'rowquid'
@@ -98,6 +98,11 @@ class User extends Authenticatable
             ->orWhere('email', 'LIKE', "%$keyword%")
             ->orWhere('id', 'LIKE', "%$keyword%")
             ;
+    }
+
+    public function fcm(): HasMany
+    {
+        return $this->hasMany(Fcm::class, 'users_id', 'id');
     }
 
 }

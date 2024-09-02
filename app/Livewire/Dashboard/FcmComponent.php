@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Dashboard;
 
+use App\Models\Fcm;
 use App\Models\User;
 use App\Services\FirebaseCloudMessagingService;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -16,31 +17,33 @@ class FcmComponent extends Component
 {
     use LivewireAlert;
 
-    public $title, $body, $fcm_token = "todos", $fcm_tipo;
+    public $title, $body, $dispositivos = "todos", $tipo;
 
     public function render()
     {
-        $users = User::where('fcm_token', '!=', null)->get();
+        $users = Fcm::select('users_id')->groupBy('users_id')->get();
         return view('livewire.dashboard.fcm-component')
             ->with('listarUsers', $users);
     }
 
     public function limpiar()
     {
-        $this->reset(['title', 'body', 'fcm_token', 'fcm_tipo']);
+        $this->reset(['title', 'body', 'dispositivos', 'tipo']);
         $this->resetErrorBag();
     }
 
     protected $rules = [
         'title' => 'required|min:4',
         'body' => 'required|min:4',
-        'fcm_token' => 'required',
+        'dispositivos' => 'required',
     ];
 
     public function sendMessage()
     {
         $this->validate();
         try {
+
+            $tokens = [];
 
             $messaging = FirebaseCloudMessagingService::connect();
 
@@ -53,40 +56,36 @@ class FcmComponent extends Component
                 'title' => $this->title,
                 'body' => $this->body,
                 'subText' => 'Administrador',
-                'destino' => 0
+                'destino' => 0,
+                'nombre' => 'Yonathan Castillo',
+                'email' => 'leothan522@gmail.com',
+                'cedula' => '20025623'
             ];
 
-            if ($this->fcm_token != "todos") {
+            if ($this->dispositivos != "todos") {
 
-                if ($this->fcm_tipo == "notification") {
-                    $message = CloudMessage::withTarget('token', $this->fcm_token)
+                $user = User::where('rowquid', $this->dispositivos)->first();
+                if ($user){
+                    $id = $user->id;
+                    $tokens = Fcm::where('users_id', $id)->get();
+                }
+
+            } else {
+                $tokens = Fcm::all();
+            }
+
+            foreach ($tokens as $token){
+                if ($this->tipo == "notification"){
+                    $message = CloudMessage::withTarget('token', $token->token)
                         ->withNotification($notificacion);
-                } else {
-                    $message = CloudMessage::withTarget('token', $this->fcm_token)
+                }else{
+                    $message = CloudMessage::withTarget('token', $token->token)
                         ->withData($data);
                 }
                 $messaging->send($message);
-
-            } else {
-
-                $listarUsers = User::where('fcm_token', '!=', null)->get();
-                foreach ($listarUsers as $user) {
-                    if ($this->fcm_tipo == "notification") {
-                        $message = CloudMessage::withTarget('token', $user->fcm_token)
-                            ->withNotification($notificacion);
-                    } else {
-                        $message = CloudMessage::withTarget('token', $user->fcm_token)
-                            ->withData($data);
-                    }
-                    $messaging->send($message);
-                }
-
             }
 
-            $this->alert(
-                'success',
-                'Mensaje enviado.'
-            );
+            $this->alert('success', 'Mensaje enviado.');
 
         } catch (MessagingException|FirebaseException $e) {
             $this->alert('warning', '¡ERROR FCM!', [
@@ -104,6 +103,7 @@ class FcmComponent extends Component
     #[On('tokenSeleccionado')]
     public function tokenSeleccionado($token)
     {
-        $this->fcm_token = $token;
+        $this->dispositivos = $token;
     }
+
 }
