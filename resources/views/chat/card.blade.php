@@ -4,12 +4,14 @@
         <div class="card-header">
             <h3 class="card-title">Chat Directo</h3>
             <div class="card-tools">
-                <button class="btn btn-tool" title="{{ $new }} Mensajes Nuevos" wire:click="show">
-                    <i class="far fa-bell text-sm"></i>
-                    @if($new > 0)
-                        <span class="badge badge-warning navbar-badge font-weight-bold">{{ $new }}</span>
-                    @endif
-                </button>
+                @if($ultimo_mensaje)
+                    <button class="btn btn-tool" title="{{ $new }} Mensajes Nuevos" wire:click="show">
+                        <i class="far fa-bell text-sm"></i>
+                        @if($new > 0)
+                            <span class="badge badge-warning navbar-badge font-weight-bold">{{ $new }}</span>
+                        @endif
+                    </button>
+                @endif
             </div>
         </div>
 
