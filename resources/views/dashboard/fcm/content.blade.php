@@ -1,5 +1,5 @@
 <div class="row justify-content-center" xmlns:wire="http://www.w3.org/1999/xhtml">
-    <div class="col-sm-6 col-md-5 col-lg-4">
+    <div class="col-sm-6 col-md-5">
         <div class="card card-navy" style="height: inherit; width: inherit; transition: all 0.15s ease 0s;">
         <div class="card-header">
                 <h3 class="card-title">
@@ -23,12 +23,12 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-paper-plane"></i></span>
                             </div>
-                            <select class="custom-select" wire:model="tipo">
+                            <select class="custom-select" wire:model.live="type">
                                 <option value="">Seleccione...</option>
                                 <option value="notification">With Notification</option>
                                 <option value="data">With Data</option>
                             </select>
-                            @error('tipo')
+                            @error('type')
                             <span class="col-sm-12 text-sm text-bold text-danger">
                                 <i class="icon fas fa-exclamation-triangle"></i>
                                 {{ $message }}
@@ -38,7 +38,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="name">Titulo</label>
+                        <label for="name">Título</label>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-window-maximize"></i></span>
@@ -68,6 +68,46 @@
                             @enderror
                         </div>
                     </div>
+
+                    @if($type == "data")
+                        <div class="form-group">
+                            <label for="name">Data</label>
+                            <button type="button" class="btn btn-tool m-1 float-right" wire:click="setItems('add')">
+                                <i class="fas fa-plus-square"></i>
+                            </button>
+                            @for($i = 0; $i < $items; $i++)
+                                <div class="input-group mb-3">
+                                    <div class="row col-12">
+
+                                        <div class="col-4">
+                                            <input type="text" class="form-control @error('keys.'.$i) is-invalid @enderror" placeholder="keys.{{ $i }}" wire:model="keys.{{ $i }}">
+                                        </div>
+                                        <div class="col-7">
+                                            <input type="text" class="form-control @error('values.'.$i) is-invalid @enderror" placeholder="values.{{ $i }}" wire:model="values.{{ $i }}">
+                                        </div>
+                                        <div class="col-1">
+                                            @if($items > 1)
+                                                <button type="button" class="btn btn-tool m-1 float-right" wire:click="setItems({{ $i }})">
+                                                    <i class="fas fa-minus-square"></i>
+                                                </button>
+                                            @else
+                                                &nbsp;
+                                            @endif
+                                        </div>
+
+                                        @error('keys.'.$i)
+                                        <span class="col-sm-12 text-sm text-bold text-danger">
+                                            <i class="icon fas fa-exclamation-triangle"></i>
+                                            {{ $message }}
+                                        </span>
+                                        @enderror
+
+                                    </div>
+                                </div>
+                            @endfor
+
+                        </div>
+                    @endif
 
                     <div class="form-group">
                         <label for="name">Dispositivos</label>

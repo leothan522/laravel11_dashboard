@@ -17,7 +17,7 @@ class FcmComponent extends Component
 {
     use LivewireAlert;
 
-    public $title, $body, $dispositivos = "todos", $tipo;
+    public $type, $title, $body, $dispositivos = "todos", $keys = [], $values = [], $items = 0;
 
     public function render()
     {
@@ -28,14 +28,17 @@ class FcmComponent extends Component
 
     public function limpiar()
     {
-        $this->reset(['title', 'body', 'dispositivos', 'tipo']);
+        $this->reset(['type','title', 'body', 'dispositivos', 'keys', 'values', 'items']);
         $this->resetErrorBag();
     }
 
     protected $rules = [
+        'type' => 'required',
         'title' => 'required|min:4',
         'body' => 'required|min:4',
         'dispositivos' => 'required',
+        'keys.*' => 'nullable|min:4|alpha_dash:ascii|required_if:type,data',
+        'values.*' => 'required_if:type,data',
     ];
 
     public function sendMessage()
@@ -62,6 +65,10 @@ class FcmComponent extends Component
                 'cedula' => '20025623'
             ];
 
+            /*for ($i = 0; $i < $this->items; $i++){
+                $data[$this->keys[$i]] = $this->values[$i];
+            }*/
+
             if ($this->dispositivos != "todos") {
 
                 $user = User::where('rowquid', $this->dispositivos)->first();
@@ -75,7 +82,7 @@ class FcmComponent extends Component
             }
 
             foreach ($tokens as $token){
-                if ($this->tipo == "notification"){
+                if ($this->type == "notification"){
                     $message = CloudMessage::withTarget('token', $token->token)
                         ->withNotification($notificacion);
                 }else{
@@ -104,6 +111,32 @@ class FcmComponent extends Component
     public function tokenSeleccionado($token)
     {
         $this->dispositivos = $token;
+    }
+
+    public function updatedType()
+    {
+        if (!$this->items){
+            $this->items = 1;
+            $this->keys[0] = null;
+            $this->values[0] =null;
+        }
+    }
+
+    public function setItems($opcion)
+    {
+        if ($opcion == "add"){
+            $this->keys[$this->items] = null;
+            $this->values[$this->items] = null;
+            $this->items++;
+        }else{
+            for ($i = $opcion; $i < $this->items - 1; $i++){
+                $this->keys[$i] = $this->keys[$i + 1];
+                $this->values[$i] = $this->values[$i +1 ];
+            }
+            $this->items--;
+            unset($this->keys[$this->items]);
+            unset($this->values[$this->items]);
+        }
     }
 
 }
