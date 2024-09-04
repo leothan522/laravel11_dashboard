@@ -44,6 +44,9 @@
 
         function cancelar() {
             $('#dispositivos_users').val('todos').trigger('change');
+            $('#customCheckbox1')
+                .removeClass('checked')
+                .prop('checked', false);
         }
 
         console.log('Hi!');

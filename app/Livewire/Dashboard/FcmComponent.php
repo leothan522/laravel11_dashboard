@@ -17,7 +17,7 @@ class FcmComponent extends Component
 {
     use LivewireAlert;
 
-    public $type, $title, $body, $dispositivos = "todos", $keys = [], $values = [], $items = 0;
+    public $title, $body, $withData = 0, $dispositivos = "todos", $keys = [], $values = [], $items = 0;
 
     public function render()
     {
@@ -28,17 +28,16 @@ class FcmComponent extends Component
 
     public function limpiar()
     {
-        $this->reset(['type','title', 'body', 'dispositivos', 'keys', 'values', 'items']);
+        $this->reset(['title', 'body', 'withData', 'dispositivos', 'keys', 'values', 'items']);
         $this->resetErrorBag();
     }
 
     protected $rules = [
-        'type' => 'required',
         'title' => 'required|min:4',
         'body' => 'required|min:4',
         'dispositivos' => 'required',
-        'keys.*' => 'nullable|min:4|alpha_dash:ascii|required_if:type,data',
-        'values.*' => 'required_if:type,data',
+        'keys.*' => 'nullable|min:4|alpha_dash:ascii|required_if:withData,1',
+        'values.*' => 'required_if:withData,1',
     ];
 
     public function sendMessage()
@@ -52,22 +51,14 @@ class FcmComponent extends Component
 
             $notificacion = Notification::fromArray([
                 'title' => $this->title,
-                'body' => $this->body
+                'body' => $this->body,
+                'image' => 'https://picsum.photos/400/200'
             ]);
 
-            $data = [
-                'title' => $this->title,
-                'body' => $this->body,
-                'subText' => 'Administrador',
-                'destino' => 0,
-                'nombre' => 'Yonathan Castillo',
-                'email' => 'leothan522@gmail.com',
-                'cedula' => '20025623'
-            ];
-
-            /*for ($i = 0; $i < $this->items; $i++){
+            $data = [];
+            for ($i = 0; $i < $this->items; $i++){
                 $data[$this->keys[$i]] = $this->values[$i];
-            }*/
+            }
 
             if ($this->dispositivos != "todos") {
 
@@ -82,11 +73,12 @@ class FcmComponent extends Component
             }
 
             foreach ($tokens as $token){
-                if ($this->type == "notification"){
+                if (!$this->withData){
                     $message = CloudMessage::withTarget('token', $token->token)
                         ->withNotification($notificacion);
                 }else{
                     $message = CloudMessage::withTarget('token', $token->token)
+                        ->withNotification($notificacion)
                         ->withData($data);
                 }
                 $messaging->send($message);
@@ -113,12 +105,17 @@ class FcmComponent extends Component
         $this->dispositivos = $token;
     }
 
-    public function updatedType()
+    public function btnWithData($withData)
     {
-        if (!$this->items){
-            $this->items = 1;
-            $this->keys[0] = null;
-            $this->values[0] =null;
+        if (!$withData){
+            $this->withData = 1;
+            if (!$this->items){
+                $this->items = 1;
+                $this->keys[0] = null;
+                $this->values[0] =null;
+            }
+        }else{
+            $this->withData = 0;
         }
     }
 
