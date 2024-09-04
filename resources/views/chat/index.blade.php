@@ -38,7 +38,7 @@
         }
 
         $(document).ready(function () {
-            //setInterval(refresh, 5000);
+            setInterval(refresh, 5000);
         });
 
         Livewire.on('cerrarModal', () => {
