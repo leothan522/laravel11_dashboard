@@ -15,7 +15,7 @@
         </li>
         @if(auth()->user()->role == 100)
             <li class="nav-item">
-                <a href="{{ route('chat.directo') }}" class="nav-link" target="_blank">
+                <a href="{{ route('chat.directo', auth()->user()->rowquid) }}" class="nav-link" target="_blank">
                     <i class="fas fa-comments"></i> Chat Directo
                 </a>
             </li>
