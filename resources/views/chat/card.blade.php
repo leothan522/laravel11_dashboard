@@ -19,14 +19,14 @@
         <!-- Conversations are loaded here -->
         <div class="direct-chat-messages" style="height: 77vh">
 
-            <div class="sticky-top bg-white pt-1 pb-1">
+            <div class="sticky-top bg-white pt-1">
                 <!-- Message. Default to the left -->
                 <div class="direct-chat-msg">
                     <div class="direct-chat-infos clearfix">
                         <span class="direct-chat-name float-left">{{ config('app.name') }}</span>
                         {{--<span class="direct-chat-timestamp float-right">{{ verFecha($fecha, 'd M h:i a') }}</span>--}}
                     </div>
-                    <img class="direct-chat-img" src="{{ asset('img/preloader_171x171.png') }}" alt="Message User Image">
+                    <img class="direct-chat-img" src="{{ asset('img/preloader_171x171.png') }}" alt="{{ env('APP_NAME') }}">
                     <div class="direct-chat-text">
                         Bienvenido a nuestro <span class="text-navy text-bold">Chat Directo</span>. este chat es
                         @if(!$tipo)
@@ -34,6 +34,9 @@
                         @else
                             <span class="text-primary text-bold">Privado</span>
                         @endif
+                    </div>
+                    <div>
+                        &nbsp;
                     </div>
                 </div>
                 <!-- /.direct-chat-msg -->
