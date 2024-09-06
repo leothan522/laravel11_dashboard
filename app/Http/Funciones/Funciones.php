@@ -6,54 +6,38 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 
-
-
-function hola(){
-    return "Funciones Personalidas bien creada";
+function generarStringAleatorio($largo = 10, $espacio = false): string
+{
+    $caracteres = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $caracteres = $espacio ? $caracteres . ' ' : $caracteres;
+    $string = '';
+    for ($i = 0; $i < $largo; $i++) {
+        $string .= $caracteres[rand(0, strlen($caracteres) - 1)];
+    }
+    return $string;
 }
 
-//Leer JSON
-function leerJson($json, $key)
+function verRole($role, $roles_id): string
 {
-    if ($json == null) {
-        return null;
-    } else {
-        $json = $json;
-        $json = json_decode($json, true);
-        if (array_key_exists($key, $json)) {
-            return $json[$key];
-        } else {
-            return null;
+    $response = '';
+    $roles = [
+        '0'     => 'Estandar',
+        '1'     => 'Administrador',
+        '100'   => 'Root'
+    ];
+
+    if (is_null($roles_id)){
+        $response = $roles[$role];
+    }else{
+        $roles = Parametro::where('tabla_id', '-1')->where('id', $roles_id)->first();
+        if ($roles){
+            $response = ucwords($roles->nombre);
         }
     }
+    return $response;
 }
 
-//Crear JSON
-function crearJson($array)
-{
-    $json = array();
-    foreach ($array as $key){
-        $json[$key] = true;
-    }
-    return json_encode($json);
-}
-
-function verSpinner()
-{
-    $spinner = '
-        <div class="overlay-wrapper" wire:loading>
-            <div class="overlay">
-                <div class="spinner-border text-navy" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        </div>
-    ';
-
-    return $spinner;
-}
-
-function verImagen($path, $user = false, $web = null)
+function verImagen($path, $user = false, $web = null): string
 {
     if (!is_null($path)){
         if ($user){
@@ -86,94 +70,180 @@ function verImagen($path, $user = false, $web = null)
     }
 }
 
-function verUtf8($string){
-    //$utf8_string = "Some UTF-8 encoded BATE QUEBRADO ÑñíÍÁÜ niño ó Ó string: é, ö, ü";
-    return mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8');
-}
-
-function verRole($role, $roles_id)
+//Leer JSON
+function leerJson($json, $key)
 {
-    $roles = [
-        '0'     => 'Estandar',
-        '1'     => 'Administrador',
-        '100'   => 'Root'
-    ];
-
-    if (is_null($roles_id)){
-        return $roles[$role];
-    }else{
-        $roles = Parametro::where('tabla_id', '-1')->where('id', $roles_id)->first();
-        if ($roles){
-            return ucwords($roles->nombre);
-        }else{
-            return "NO definido";
+    if ($json == null) {
+        return null;
+    } else {
+        $json = $json;
+        $json = json_decode($json, true);
+        if (array_key_exists($key, $json)) {
+            return $json[$key];
+        } else {
+            return null;
         }
     }
 }
 
-function verFecha($fecha, $format = null){
-    $carbon = new Carbon();
-    if ($format == null){ $format = "j/m/Y"; }
-    return $carbon->parse($fecha)->format($format);
-}
-
-function haceCuanto($fecha){
-    $carbon = new Carbon();
-    return $carbon->parse($fecha)->diffForHumans();
-}
-
-function generarStringAleatorio($largo = 10, $espacio = false): string
+function numRowsPaginate(): int
 {
-    $caracteres = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $caracteres = $espacio ? $caracteres . ' ' : $caracteres;
-    $string = '';
-    for ($i = 0; $i < $largo; $i++) {
-        $string .= $caracteres[rand(0, strlen($caracteres) - 1)];
-    }
-    return $string;
-}
-
-function diaEspanol($fecha){
-    $diaSemana = date("w",strtotime($fecha));
-    $diasEspanol = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado");
-    $dia = $diasEspanol[$diaSemana];
-    return $dia;
-}
-
-function mesEspanol($numMes){
-    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-    $mes = $meses[$numMes - 1];
-    return $mes;
-}
-
-function numRowsPaginate(){
-    $default = 15;
+    $num = 15;
     $parametro = Parametro::where("nombre", "numRowsPaginate")->first();
     if ($parametro) {
-        if (is_numeric($parametro->valor)) {
-            return $parametro->valor;
+        if (is_int($parametro->valor)) {
+            $num = intval($parametro->valor);
         }
     }
-    return $default;
+    return $num;
 }
 
-function numSizeCodigo(){
-    $default = 6;
-    $parametro = Parametro::where("nombre", "size_codigo")->first();
-    if ($parametro) {
-        if (is_numeric($parametro->tabla_id)) {
-            return $parametro->tabla_id;
-        }
-    }
-    return $default;
-}
-
-function formatoMillares($cantidad, $decimal = 2)
+function getFecha($fecha = null, $format = null): string
 {
+    if (is_null($fecha)){
+        if (is_null($format)){
+            $date = Carbon::now(env('APP_TIMEZONE', "America/Caracas"))->toDateString();
+        }else{
+            $date = Carbon::now(env('APP_TIMEZONE', "America/Caracas"))->format($format);
+        }
+    }else{
+        if (is_null($format)){
+            $date = Carbon::parse($fecha)->format("d/m/Y");
+        }else{
+            $date = Carbon::parse($fecha)->format($format);
+        }
+    }
+    return $date;
+}
+
+function haceCuanto($fecha): string
+{
+    return Carbon::parse($fecha)->diffForHumans();
+}
+
+// Obtener la fecha en español
+function fechaEnLetras($fecha, $isoFormat = null): string
+{
+    // dddd => Nombre del DIA ejemplo: lunes
+    // MMMM => nombre del mes ejemplo: febrero
+    $format = "dddd D [de] MMMM [de] YYYY"; // fecha completa
+    if (!is_null($isoFormat)){
+        $format = $isoFormat;
+    }
+    return Carbon::parse($fecha)->isoFormat($format);
+}
+
+function listarDias(): array
+{
+    return ["Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado"];
+}
+
+function ListarMeses(): array
+{
+    return ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+}
+
+function formatoMillares($cantidad, $decimal = 2): string
+{
+    if (!is_numeric($cantidad)){
+        $cantidad = 0;
+    }
     return number_format($cantidad, $decimal, ',', '.');
 }
 
-function crearMiniaturas($imagen_data, $path_data)
+function QRCodeGenerate($string = 'Hello World!', $path = false, $size = 100, $margin = 1): string
+{
+    $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+        new \BaconQrCode\Renderer\RendererStyle\RendererStyle($size,$margin),
+        new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+    );
+    $writer = new \BaconQrCode\Writer($renderer);
+    $writer->writeFile($string, 'storage/qrcode.svg', '');
+
+    if ($path){
+        return asset('storage/qrcode.svg');
+    }
+
+    if (file_exists(public_path('storage/qrcode.svg'))){
+        return '<img src="'.asset('storage/qrcode.svg').'" alt="QRCode">';
+    }
+    return "QRCode";
+}
+
+function verSpinner(): string
+{
+    $spinner = '
+        <div class="overlay-wrapper" wire:loading>
+            <div class="overlay">
+                <div class="spinner-border text-navy" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </div>
+    ';
+
+    return $spinner;
+}
+
+function numSizeCodigo(): int
+{
+    $num = 6;
+    $parametro = Parametro::where("nombre", "size_codigo")->first();
+    if ($parametro) {
+        if (is_int($parametro->tabla_id)) {
+            $num = intval($parametro->tabla_id);
+        }
+    }
+    return $num;
+}
+
+function cerosIzquierda($cantidad, $cantCeros = 2): int|string
+{
+    if ($cantidad == 0) {
+        return 0;
+    }
+    return str_pad($cantidad, $cantCeros, "0", STR_PAD_LEFT);
+}
+
+function nextCodigo($parametros_nombre, $parametros_tabla_id, $nombre_formato = null): string
+{
+
+    $next = 1;
+    $codigo = null;
+
+    //buscamos algun formato para el codigo
+    if (!is_null($nombre_formato)){
+        $parametro = Parametro::where("nombre", $nombre_formato)->where('tabla_id', $parametros_tabla_id)->first();
+        if ($parametro) {
+            $codigo = $parametro->valor;
+        }else{
+            $codigo = "N".$parametros_tabla_id.'-';
+        }
+    }
+
+    //buscamos el proximo numero
+    $parametro = Parametro::where("nombre", $parametros_nombre)->where('tabla_id', $parametros_tabla_id)->first();
+    if ($parametro){
+        $next = $parametro->valor;
+        $parametro->valor = $next + 1;
+        $parametro->save();
+    }else{
+        $parametro = new Parametro();
+        $parametro->nombre = $parametros_nombre;
+        $parametro->tabla_id = $parametros_tabla_id;
+        $parametro->valor = 2;
+        $parametro->save();
+    }
+
+    if (!is_int($next)){ $next = 1; }
+
+    $size = cerosIzquierda($next, numSizeCodigo());
+
+    return $codigo . $size;
+
+}
+
+function crearMiniaturas($imagen_data, $path_data): array
 {
     //ejemplo de path
     //$miniatura = 'storage/productos/size_'.$nombreImagen;
@@ -202,7 +272,7 @@ function crearMiniaturas($imagen_data, $path_data)
         ]*/
     ];
 
-    $respuesta = array();
+    $response = array();
 
     $image = ImageManager::gd()->read($imagen_data);
     foreach ($sizes as $nombre => $items){
@@ -214,17 +284,17 @@ function crearMiniaturas($imagen_data, $path_data)
             if ($key == 'height') { $height = $valor; }
             if ($key == 'path') { $path = $valor; }
         }
-        $respuesta[$nombre] = $path;
+        $response[$nombre] = $path;
         $image->resize($width, $height);
         $image->save($path);
     }
 
-    return $respuesta;
+    return $response;
 
 }
 
 //borrar imagenes incluyendo las miniaturas
-function borrarImagenes($imagen, $carpeta)
+function borrarImagenes($imagen, $carpeta): void
 {
     if ($imagen){
         //reenplazamos storage por public
@@ -259,8 +329,46 @@ function borrarImagenes($imagen, $carpeta)
     }
 }
 
+function verUtf8($string, $safeNull = false): string
+{
+    //$utf8_string = "Some UTF-8 encoded BATE QUEBRADO ÑñíÍÁÜ niño ó Ó string: é, ö, ü";
+    $response = null;
+    $text = 'NULL';
+    if ($safeNull){
+        $text = '';
+    }
+    if (!is_null($string)){
+        $response = mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8');
+    }
+    if (!is_null($response)){
+        $text = "$response";
+    }
+    return $text;
+}
+
+function obtenerPorcentaje($cantidad, $total): float|int
+{
+    if ($total != 0) {
+        $porcentaje = ((float)$cantidad * 100) / $total; // Regla de tres
+        $porcentaje = round($porcentaje, 2);  // Quitar los decimales
+        return $porcentaje;
+    }
+    return 0;
+}
+
+//Crear JSON
+function crearJson($array): false|string
+{
+    $json = array();
+    foreach ($array as $key){
+        $json[$key] = true;
+    }
+    return json_encode($json);
+}
+
 //Función comprueba una hora entre un rango
-function hourIsBetween($from, $to, $input) {
+function hourIsBetween($from, $to, $input): bool
+{
     $dateFrom = DateTime::createFromFormat('!H:i', $from);
     $dateTo = DateTime::createFromFormat('!H:i', $to);
     $dateInput = DateTime::createFromFormat('!H:i', $input);
@@ -271,7 +379,7 @@ Comprobaremos si la segunda hora que le pasamos es inferior a la primera, con lo
 Y al final devolveremos true o false dependiendo si el valor introducido se encuentra entre lo que le hemos pasado.*/
 }
 
-function dataSelect2($rows)
+function dataSelect2($rows): array
 {
     $data = array();
     foreach ($rows as $row){
@@ -279,108 +387,10 @@ function dataSelect2($rows)
             'id' => $row->id,
             'text' => $row->codigo.'  '.$row->nombre
         ];
-        array_push($data, $option);
+        $data[] = $option;
     }
     return $data;
 }
 
-function array_sort_by($arrIni, $col, $order = SORT_ASC)
-{
-    $arrAux = array();
-    foreach ($arrIni as $key=> $row)
-    {
-        $arrAux[$key] = is_object($row) ? $arrAux[$key] = $row->$col : $row[$col];
-        $arrAux[$key] = strtolower($arrAux[$key]);
-    }
-    array_multisort($arrAux, $order, $arrIni);
-    return $arrIni;
-}
 
-function nextCodigo($parametros_nombre, $parametros_tabla_id, $nombre_formato = null){
 
-    $next = 1;
-    $codigo = null;
-
-    //buscamos algun formato para el codigo
-    if (!is_null($nombre_formato)){
-        $parametro = Parametro::where("nombre", $nombre_formato)->where('tabla_id', $parametros_tabla_id)->first();
-        if ($parametro) {
-            $codigo = $parametro->valor;
-        }else{
-            $codigo = "N".$parametros_tabla_id.'-';
-        }
-    }
-
-    //buscamos el proximo numero
-    $parametro = Parametro::where("nombre", $parametros_nombre)->where('tabla_id', $parametros_tabla_id)->first();
-    if ($parametro){
-        $next = $parametro->valor;
-        $parametro->valor = $next + 1;
-        $parametro->save();
-    }else{
-        $parametro = new Parametro();
-        $parametro->nombre = $parametros_nombre;
-        $parametro->tabla_id = $parametros_tabla_id;
-        $parametro->valor = 2;
-        $parametro->save();
-    }
-
-    if (!is_numeric($next)){ $next = 1; }
-
-    $size = cerosIzquierda($next, numSizeCodigo());
-
-    return $codigo . $size;
-
-}
-
-//Ceros a la izquierda
-function cerosIzquierda($cantidad, $cantCeros = 2)
-{
-    if ($cantidad == 0) {
-        return 0;
-    }
-    return str_pad($cantidad, $cantCeros, "0", STR_PAD_LEFT);
-}
-
-function cuantosDias($fecha_inicio, $fecha_final){
-
-    if ($fecha_inicio == null){
-        return 0;
-    }
-
-    $carbon = new Carbon();
-    $fechaEmision = $carbon->parse($fecha_inicio);
-    $fechaExpiracion = $carbon->parse($fecha_final);
-    $diasDiferencia = $fechaExpiracion->diffInDays($fechaEmision);
-    return $diasDiferencia;
-}
-
-//calculo de porcentaje
-function obtenerPorcentaje($cantidad, $total)
-{
-    if ($total != 0) {
-        $porcentaje = ((float)$cantidad * 100) / $total; // Regla de tres
-        $porcentaje = round($porcentaje, 2);  // Quitar los decimales
-        return $porcentaje;
-    }
-    return 0;
-}
-
-function QRCodeGenerate($string = 'Hello World!', $path = false, $size = 100, $margin = 1)
-{
-    $renderer = new \BaconQrCode\Renderer\ImageRenderer(
-        new \BaconQrCode\Renderer\RendererStyle\RendererStyle($size,$margin),
-        new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
-    );
-    $writer = new \BaconQrCode\Writer($renderer);
-    $writer->writeFile($string, 'storage/qrcode.svg', '');
-
-    if ($path){
-        return asset('storage/qrcode.svg');
-    }
-
-    if (file_exists(public_path('storage/qrcode.svg'))){
-        return '<img src="'.asset('storage/qrcode.svg').'" alt="QRCode">';
-    }
-    return "QRCode";
-}
