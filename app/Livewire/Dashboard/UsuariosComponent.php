@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\Models\Parametro;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -117,6 +118,7 @@ class UsuariosComponent extends Component
             $usuarios->name = ucwords($this->name);
             $usuarios->email = strtolower($this->email);
             $usuarios->password = Hash::make($this->password);
+
             if ($this->role > 1) {
                 $usuarios->role = 2;
                 $usuarios->roles_id = $this->role;
@@ -128,7 +130,13 @@ class UsuariosComponent extends Component
                 $usuarios->role = $this->role;
                 $usuarios->roles_id = null;
             }
-            $usuarios->rowquid = generarStringAleatorio(16);
+
+            do{
+                $rowquid = generarStringAleatorio(16);
+                $existe = User::where('rowquid', $rowquid)->first();
+            }while($existe);
+
+            $usuarios->rowquid = $rowquid;
             $usuarios->save();
             $this->reset('keyword');
             $this->limpiar();
@@ -140,6 +148,7 @@ class UsuariosComponent extends Component
             if ($usuarios){
                 $usuarios->name = ucwords($this->edit_name);
                 $usuarios->email = strtolower($this->edit_email);
+
                 if ($this->edit_role > 1 && $this->edit_role < 100) {
                     $usuarios->role = 2;
                     $usuarios->roles_id = $this->edit_role;
@@ -151,9 +160,7 @@ class UsuariosComponent extends Component
                     $usuarios->role = $this->edit_role;
                     $usuarios->roles_id = null;
                 }
-                if (is_null($usuarios->rowquid)){
-                    $usuarios->rowquid = generarStringAleatorio(16);
-                }
+
                 $usuarios->save();
                 $this->edit($usuarios->rowquid);
                 $this->alert('success', 'Usuario Actualizado.');
@@ -184,6 +191,7 @@ class UsuariosComponent extends Component
             $this->getPermisos = $usuario->permisos;
             $this->rowquid = $rowquid;
         }else{
+            Sleep::for(500)->millisecond();
             $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
         }
     }
@@ -303,6 +311,8 @@ class UsuariosComponent extends Component
             $usuario->save();
             $this->reset('cambios');
             $this->alert('success', 'Permisos Guardados.');
+        }else{
+            $this->dispatch('cerrarModal', selector: 'button_permisos_modal_cerrar');
         }
     }
 
