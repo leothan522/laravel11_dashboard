@@ -409,13 +409,14 @@ Comprobaremos si la segunda hora que le pasamos es inferior a la primera, con lo
 Y al final devolveremos true o false dependiendo si el valor introducido se encuentra entre lo que le hemos pasado.*/
 }
 
-function dataSelect2($rows): array
+function getDataSelect2($rows, $text, $id = "rowquid"): array
 {
-    $data = array();
-    foreach ($rows as $row){
+    $data = [];
+    $filas = $rows->toArray();
+    foreach ($filas as $row){
         $option = [
-            'id' => $row->id,
-            'text' => $row->codigo.'  '.$row->nombre
+            'id' => $row[$id],
+            'text' => $row[$text]
         ];
         $data[] = $option;
     }
