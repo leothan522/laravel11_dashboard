@@ -15,16 +15,17 @@ function comprobarPermisos($routeName = null)
 
 function allPermisos()
 {
+    $dashboard = 'dashboard.';
     $permisos = [
         'Usuarios' => [
-            'route' => 'usuarios.index',
+            'route' => $dashboard.'usuarios',
             'submenu' => [
-                'Crear Usuarios' => 'usuarios.create',
-                'Editar Usuarios' => 'usuarios.edit',
-                'Suspender Usuarios' => 'usuarios.estatus',
-                'Reestablecer Contraseña' => 'usuarios.password',
-                'Descargar Excel' => 'usuarios.excel',
-                'Eliminar Usuarios' => 'usuarios.destroy',
+                'Crear Usuarios' => $dashboard.'usuarios.create',
+                'Editar Usuarios' => $dashboard.'usuarios.edit',
+                'Suspender Usuarios' => $dashboard.'usuarios.estatus',
+                'Reestablecer Contraseña' => $dashboard.'usuarios.password',
+                'Descargar Excel' => $dashboard.'usuarios.excel',
+                'Eliminar Usuarios' => $dashboard.'usuarios.destroy',
             ]
         ],
     ];
