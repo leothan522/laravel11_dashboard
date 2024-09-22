@@ -26,10 +26,16 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
 
+        do{
+            $rowquid = generarStringAleatorio(16);
+            $existe = User::where('rowquid', $rowquid)->first();
+        }while($existe);
+
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
+            'rowquid' => $rowquid
         ]);
     }
 }
