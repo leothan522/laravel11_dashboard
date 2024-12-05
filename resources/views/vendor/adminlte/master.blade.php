@@ -98,6 +98,8 @@
         @if(intval(app()->version()) >= 7)
             @livewireScripts
             <x-livewire-alert::scripts />
+            {!! verToastBootstrap() !!}
+            <script src="{{ asset('js/toastBootstrap.js') }}"></script>
         @else
             <livewire:scripts />
         @endif
@@ -105,7 +107,6 @@
 
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
-
 </body>
 
 </html>

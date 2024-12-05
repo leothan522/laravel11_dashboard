@@ -3,16 +3,16 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\Parametro;
+use App\Traits\ToastBootstrap;
 use Illuminate\Support\Sleep;
 use Illuminate\Validation\Rule;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ParametrosComponent extends Component
 {
-    use LivewireAlert;
+    use ToastBootstrap;
 
     public $rows = 0, $numero = 14, $tableStyle = false;
     public $view = "create", $keyword;
@@ -82,7 +82,7 @@ class ParametrosComponent extends Component
         if (is_null($this->parametros_id)){
             //nuevo
             $parametro = new Parametro();
-            $message = "Parametro Creado.";
+            $resetKeyword = true;
             do{
                 $rowquid = generarStringAleatorio(16);
                 $existe = Parametro::where('rowquid', '=', $rowquid)->first();
@@ -91,7 +91,7 @@ class ParametrosComponent extends Component
         }else{
             //editar
             $parametro = Parametro::find($this->parametros_id);
-            $message = "Parametro Actualizado.";
+            $resetKeyword = false;
         }
 
         if ($parametro){
@@ -102,13 +102,17 @@ class ParametrosComponent extends Component
             $parametro->valor = $this->valor;
             $parametro->save();
 
-            if ($message == "Parametro Creado."){
+            if ($resetKeyword){
                 $this->reset('keyword');
             }
-            $this->alert('success', $message);
+            $this->dispatch('cerrarModal');
+            Sleep::for(500)->millisecond();
+            $this->toastBootstrap();
+        }else{
+            $this->limpiar();
+            $this->dispatch('cerrarModal');
         }
-        $this->limpiar();
-        $this->dispatch('cerrarModal');
+
     }
 
     public function edit($rowquid)
@@ -138,15 +142,7 @@ class ParametrosComponent extends Component
     public function destroy($rowquid)
     {
         $this->rowquid = $rowquid;
-        $this->confirm('¿Estas seguro?', [
-            'toast' => false,
-            'position' => 'center',
-            'showConfirmButton' => true,
-            'confirmButtonText' =>  '¡Sí, bórralo!',
-            'text' =>  '¡No podrás revertir esto!',
-            'cancelButtonText' => 'No',
-            'onConfirmed' => 'confirmed',
-        ]);
+        $this->confirmToastBootstrap('confirmed');
     }
 
     #[On('confirmed')]
@@ -156,7 +152,7 @@ class ParametrosComponent extends Component
         if ($parametro){
             $parametro->delete();
             $this->limpiar();
-            $this->alert('success', 'Parametro Eliminado.');
+            $this->toastBootstrap('success', 'Parametro Eliminado.');
         }
     }
 

@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Dashboard;
 
-use Jantinnerezo\LivewireAlert\LivewireAlert;
+use App\Traits\ToastBootstrap;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class PruebasComponent extends Component
 {
-    use LivewireAlert;
+    use ToastBootstrap;
     public function render()
     {
         return view('livewire.dashboard.pruebas-component');
@@ -15,7 +16,13 @@ class PruebasComponent extends Component
 
     public function btnPrueba()
     {
-        $this->alert('success', 'hola mundo!');
+        $this->toastBootstrap('success', 'Prueba Prueba');
+    }
+
+    #[On('prueba')]
+    public function prueba()
+    {
+        $this->toastBootstrap('success', 'Eliminado.');
     }
 
 
