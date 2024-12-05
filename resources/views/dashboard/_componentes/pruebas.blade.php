@@ -48,6 +48,12 @@
             }
             return false;
         }
+
+        function btnToast()
+        {
+            $('#liveToast').toast('show');
+        }
+
         console.log('Hi!');
     </script>
 @endsection
