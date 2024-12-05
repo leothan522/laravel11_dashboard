@@ -1,13 +1,13 @@
-<div class="card card-navy" xmlns:wire="http://www.w3.org/1999/xhtml">
+<div class="card card-navy card-outline" xmlns:wire="http://www.w3.org/1999/xhtml">
     <div class="card-header">
         <h3 class="card-title">
             @if($keyword)
-                Busqueda { <b class="text-warning">{{ $keyword }}</b> } [ <b class="text-warning">{{ $totalBusqueda }}</b> ]
-                <button class="btn btn-tool text-warning" wire:click="cerrarBusqueda">
+                Busqueda { <b class="text-primary">{{ $keyword }}</b> } [ <b class="text-primary">{{ $totalBusqueda }}</b> ]
+                <button class="btn btn-tool text-primary" wire:click="cerrarBusqueda">
                     <i class="fas fa-times-circle"></i>
                 </button>
             @else
-                Registrados [ <b class="text-warning">{{ $rowsUsuarios }}</b> ]
+                Registrados [ <b class="text-primary">{{ $rowsUsuarios }}</b> ]
             @endif
         </h3>
 
@@ -16,7 +16,7 @@
                 <i class="fas fa-sync-alt"></i>
             </button>
             @if(comprobarPermisos('usuarios.excel'))
-                <a href="{{ route('dashboard.usuarios.excel', $keyword) }}" class="btn btn-tool text-success swalDefaultInfo">
+                <a href="{{ route('dashboard.usuarios.excel', $keyword) }}" class="btn btn-tool text-success" onclick="toastBootstrap({ toast: 'toast', type: 'info', message: 'Descargando Archivo.'})">
                     <i class="fas fa-file-excel"></i> <i class="fas fa-download"></i>
                 </a>
             @endif

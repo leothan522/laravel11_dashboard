@@ -31,7 +31,7 @@ window.addEventListener('toastBootstrap', async (event) => {
 
         if (toast === 'toast') {
 
-            document.querySelector('#toastBootstrap').innerHTML = '<div class="position-fixed pr-4 pl-4" style="z-index: 5; top: 7%"> ' +
+            document.querySelector('#toastBootstrap').innerHTML = '<div class="position-fixed pr-4 pl-4" style="z-index: 2050; top: 7%"> ' +
                 '<div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="min-width: 232px;"> ' +
                 '<div id="liveToastClass" class="toast-header"> ' +
                 '<span id="liveToastIcon"><i class="fa fa-check"></i></span> ' +
@@ -51,7 +51,7 @@ window.addEventListener('toastBootstrap', async (event) => {
 
         } else {
 
-            document.querySelector('#toastBootstrap').innerHTML = '<div class="position-fixed pr-4 pl-4" style="z-index: 5; top: 40%"> ' +
+            document.querySelector('#toastBootstrap').innerHTML = '<div class="position-fixed pr-4 pl-4" style="z-index: 2050; top: 40%"> ' +
                 '<div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false" style="min-width: 232px;"> ' +
                 '<div id="liveToastClass" class="toast-header"> ' +
                 '<span id="liveToastIcon"><i class="fa fa-check"></i></span> ' +
@@ -114,3 +114,12 @@ window.addEventListener('toastBootstrap', async (event) => {
     }
 
 });
+
+function toastBootstrap(options = { toast: 'toast', type: 'success', }) {
+    this.dispatchEvent(new CustomEvent('toastBootstrap', {
+        bubbles: true,
+        detail: options
+    }));
+}
+
+console.log('evento');
