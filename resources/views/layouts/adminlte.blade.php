@@ -131,6 +131,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <x-livewire-alert::scripts />
 {!! verToastBootstrap() !!}
 <script src="{{ asset('js/toastBootstrap.js') }}"></script>
+@include('layouts.toastBootstrap')
 @yield('js')
 <script>
     function pageLoaded() {

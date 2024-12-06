@@ -130,4 +130,11 @@ function toastBootstrap(options = { toast: true, type: 'success', }) {
     }));
 }
 
-//console.log('toastBootstrap.js');
+window.flashToastBootstrap = async (flash) => {
+    var events = flash.events;
+    var data = flash.events.data;
+    var options = flash.options;
+    alert('hgola');
+};
+
+console.log('toastBootstrap.js');
