@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Traits\ToastBootstrap;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserPermisos
 {
-    use LivewireAlert;
+    use ToastBootstrap;
     /**
      * Handle an incoming request.
      *
@@ -21,7 +22,7 @@ class UserPermisos
         if (comprobarPermisos(Route::currentRouteName())){
             return $next($request);
         }else{
-            $this->flash('warning', 'No tienes permisos suficientes.', []);
+            $this->flashBootstrap('info', 'No tienes permisos suficientes.');
             return redirect()->route('dashboard.dashboard');
         }
     }
