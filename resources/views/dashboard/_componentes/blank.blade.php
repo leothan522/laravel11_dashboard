@@ -43,7 +43,7 @@
             let keyword  = input.val();
             if (keyword.length > 0){
                 input.blur();
-                alert('Falta vincular con el componente Livewire');
+                toastBootstrap({ toast: true, type: 'error', message: 'Falta vincular con el componente Livewire.'})
                 //Livewire.dispatch('buscar', { keyword: keyword });
             }
             return false;

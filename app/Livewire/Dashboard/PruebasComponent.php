@@ -16,13 +16,13 @@ class PruebasComponent extends Component
 
     public function btnPrueba()
     {
-        $this->toastBootstrap('success', 'Prueba Prueba');
+        $this->confirmToastBootstrap('prueba');
     }
 
     #[On('prueba')]
     public function prueba()
     {
-        $this->toastBootstrap('success', 'Eliminado.');
+        $this->htmlToastBoostrap();
     }
 
 

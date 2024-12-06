@@ -4,6 +4,8 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\Parametro;
 use App\Models\User;
+use App\Traits\ToastBootstrap;
+use Illuminate\Support\Sleep;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -12,8 +14,9 @@ use Livewire\Component;
 class RolesComponent extends Component
 {
     use LivewireAlert;
+    use ToastBootstrap;
 
-    public $nombre, $tabla = 'roles', $getPermisos, $cambios = false;
+    public $nombre, $tabla = "roles", $getPermisos, $cambios = false;
 
     #[Locked]
     public $roles_id, $rowquid;
@@ -41,7 +44,7 @@ class RolesComponent extends Component
 
             $count = Parametro::where('tabla_id', -1)->count();
             if ($count >= 10){
-                $this->alert('warning', 'El maximo de roles permitidos es 10');
+                $this->toastBootstrap('info', 'El maximo de roles permitidos es 10');
                 return [];
             }
 
@@ -50,18 +53,18 @@ class RolesComponent extends Component
         }
 
         if (empty($nombre) || strlen($nombre) <= 3) {
-            $this->alert('warning', 'el campo nombre es requerido min 4 caracteres.');
+            $this->toastBootstrap('warning', 'El campo nombre es requerido min 4 caracteres.');
             return [];
         }
 
         if (strlen($nombre) >= 20) {
-            $this->alert('warning', 'el campo nombre solo puede tener 20 caracteres.');
+            $this->toastBootstrap('warning', 'El campo nombre solo puede tener 20 caracteres.');
             return [];
         }
 
         $existe = Parametro::where('nombre', $nombre)->where('tabla_id', -1)->first();
         if ($existe || $nombre == 'administrador' || $nombre == 'estandar'){
-            $this->alert('error', 'El rol <b class="text-danger">'.ucfirst($nombre).'</b> ya existe.');
+            $this->htmlToastBoostrap(null, ['type' => 'warning', 'message' => 'El rol <b class="text-danger">'.$nombre.'</b> ya existe.']);
             return [];
         }
 
@@ -87,11 +90,11 @@ class RolesComponent extends Component
             if ($this->roles_id){
                 $this->dispatch('setRolList', id:$parametro->rowquid, nombre:ucwords($parametro->nombre));
                 $this->edit($parametro->rowquid);
-                $this->alert('success', 'Rol Actualizado.');
+                $this->toastBootstrap('success', 'Rol Actualizado.');
             }else{
                 $this->dispatch('addRoleList', id:$parametro->rowquid, nombre:ucwords($parametro->nombre), rows:$count + 1);
                 $this->limpiarRoles();
-                $this->alert('success', 'Rol Creado.');
+                $this->toastBootstrap('success', 'Rol Creado.');
             }
 
         }else{
@@ -124,15 +127,7 @@ class RolesComponent extends Component
     public function destroy($rowquid)
     {
         $this->rowquid = $rowquid;
-        $this->confirm('¿Estas seguro?', [
-            'toast' => false,
-            'position' => 'center',
-            'showConfirmButton' => true,
-            'confirmButtonText' => '¡Sí, bórralo!',
-            'text' => '¡No podrás revertir esto!',
-            'cancelButtonText' => 'No',
-            'onConfirmed' => 'confirmedRol',
-        ]);
+        $this->confirmToastBootstrap('confirmedRol');
     }
 
     #[On('confirmedRol')]
@@ -151,21 +146,13 @@ class RolesComponent extends Component
             }
 
             if ($vinculado) {
-                $this->alert('warning', '¡No se puede Borrar!', [
-                    'position' => 'center',
-                    'timer' => '',
-                    'toast' => false,
-                    'text' => 'El registro que intenta borrar ya se encuentra vinculado con otros procesos.',
-                    'showConfirmButton' => true,
-                    'onConfirmed' => '',
-                    'confirmButtonText' => 'OK',
-                ]);
+                $this->htmlToastBoostrap();
             } else {
                 $row->delete();
                 $this->dispatch('removeRolList', id: $this->rowquid, rows: $parametros - 1);
                 $this->limpiarRoles();
-                $this->alert('success', 'Rol Eliminado.');
-
+                Sleep::for(500)->millisecond();
+                $this->toastBootstrap('success', 'Rol Eliminado.');
             }
         }else{
             $this->dispatch('removeRolList', id: $this->rowquid , rows: $parametros - 1);
@@ -218,7 +205,7 @@ class RolesComponent extends Component
                 $usuario->save();
             }
             $this->reset('cambios');
-            $this->alert('success', 'Permisos Guardados.');
+            $this->toastBootstrap('success', 'Permisos Guardados.');
         }else{
             $parametros = Parametro::where('tabla_id', -1)->count();
             $this->dispatch('removeRolList', id: $this->rowquid, rows: $parametros - 1);

@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\Models\Fcm;
 use App\Models\User;
 use App\Services\FirebaseCloudMessagingService;
+use App\Traits\ToastBootstrap;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Kreait\Firebase\Exception\FirebaseException;
 use Kreait\Firebase\Exception\MessagingException;
@@ -15,7 +16,7 @@ use Livewire\Component;
 
 class FcmComponent extends Component
 {
-    use LivewireAlert;
+    use ToastBootstrap;
 
     public $title, $body, $withData = 0, $dispositivos = "todos", $keys = [], $values = [], $items = 0;
 
@@ -84,17 +85,27 @@ class FcmComponent extends Component
                 $messaging->send($message);
             }
 
-            $this->alert('success', 'Mensaje enviado.');
+            $this->toastBootstrap('success', 'Mensaje enviado.');
 
         } catch (MessagingException|FirebaseException $e) {
-            $this->alert('warning', '¡ERROR FCM!', [
-                'position' => 'center',
-                'timer' => '',
-                'toast' => false,
-                'text' => $e->getMessage(),
-                'showConfirmButton' => true,
-                'onConfirmed' => '',
-                'confirmButtonText' => 'OK',
+            $html = '
+                <div class="row">
+                <div class="col-12 p-2">
+                    <div class="small-box" style="box-shadow: none; min-height: 40px;">
+                        <div class="overlay bg-light">
+                            <i class="far fa-4x fa-lightbulb opacity-75 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 text-justify">
+                    '.$e->getMessage().'
+                </div>
+            </div>
+            ';
+            $this->htmlToastBoostrap(null, [
+                'type' => 'error',
+                'title' => '¡ERROR FCM!',
+                'message' => $html
             ]);
         }
     }

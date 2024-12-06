@@ -16,7 +16,6 @@ use Livewire\Component;
 
 class UsuariosComponent extends Component
 {
-    use LivewireAlert;
     use ToastBootstrap;
 
     public $rows = 0, $numero = 14, $tableStyle = false;
@@ -278,15 +277,7 @@ class UsuariosComponent extends Component
             $vinculado = false;
 
             if ($vinculado) {
-                $this->alert('warning', '¡No se puede Borrar!', [
-                    'position' => 'center',
-                    'timer' => '',
-                    'toast' => false,
-                    'text' => 'El registro que intenta borrar ya se encuentra vinculado con otros procesos.',
-                    'showConfirmButton' => true,
-                    'onConfirmed' => '',
-                    'confirmButtonText' => 'OK',
-                ]);
+                $this->htmlToastBoostrap();
             } else {
                 $usuario->delete();
                 $this->limpiar();
@@ -333,7 +324,7 @@ class UsuariosComponent extends Component
             $usuario->permisos = $this->getPermisos;
             $usuario->save();
             $this->reset('cambios');
-            $this->alert('success', 'Permisos Guardados.');
+            $this->toastBootstrap();
         }else{
             $this->dispatch('cerrarModal', selector: 'button_permisos_modal_cerrar');
         }

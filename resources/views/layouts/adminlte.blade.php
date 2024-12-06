@@ -129,6 +129,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="{{ asset('vendor/sweetalert2/sweetalert2.all.min.js') }}"></script>
 @livewireScripts
 <x-livewire-alert::scripts />
+{!! verToastBootstrap() !!}
+<script src="{{ asset('js/toastBootstrap.js') }}"></script>
 @yield('js')
 <script>
     function pageLoaded() {

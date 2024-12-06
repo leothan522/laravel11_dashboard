@@ -2,8 +2,8 @@
     <div class="card-header">
         <h3 class="card-title">
             @if($keyword)
-                Busqueda { <b class="text-primary">{{ $keyword }}</b> } [ <b class="text-primary">{{ $totalBusqueda }}</b> ]
-                <button class="btn btn-tool text-primary" wire:click="cerrarBusqueda"><i class="fas fa-times-circle"></i>
+                Búsqueda { <b class="text-primary">{{ $keyword }}</b> } [ <b class="text-primary">{{ $totalBusqueda }}</b> ]
+                <button class="btn btn-tool text-danger" wire:click="cerrarBusqueda"><i class="fas fa-times-circle"></i>
                 </button>
             @else
                 Todos [ <b class="text-primary">{{ $rowsParametros }}</b> ]
