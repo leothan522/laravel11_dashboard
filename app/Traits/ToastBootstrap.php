@@ -61,6 +61,16 @@ trait ToastBootstrap{
 
     }
 
+    public function flashBootstrap($type = 'success', $message = "", $options = []): void
+    {
+        $this->payload['type'] = $type;
+        if (!empty($message)) {
+            $this->payload['message'] = $message;
+        }
+        $this->getOptions($options);
+        session()->flash('toastBootstrap-flash', $this->payload);
+    }
+
     protected function show($event, $params): Event
     {
         $event = new Event($event, $params);

@@ -16,7 +16,8 @@ class PruebasComponent extends Component
 
     public function btnPrueba()
     {
-        $this->confirmToastBootstrap('prueba');
+        $this->flashBootstrap();
+        return redirect()->route('dashboard.dashboard');
     }
 
     #[On('prueba')]

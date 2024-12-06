@@ -63,9 +63,9 @@ window.addEventListener('toastBootstrap', async (event) => {
                 '</div> ' +
                 '<div class="toast-body bg-light"> ' +
                 '<span id="liveToastMessage">Hello, world! This is a toast message.</span> ' +
-                '<div class="row justify-content-between border-top mt-2 pt-2"> ' +
-                '<button id="liveToastBtnSi" type="button" class="btn btn-sm btn-primary" data-dismiss="toast" aria-label="Close">¡Sí, bórralo!</button> ' +
-                '<button id="liveToastBtnNO" type="button" class="btn btn-sm btn-default" data-dismiss="toast" aria-label="Close">Cancelar</button> ' +
+                '<div class="row justify-content-between border-top mt-2 pt-2 pl-2 pr-2"> ' +
+                '<button id="liveToastBtnSi" type="button" class="btn btn-sm btn-primary " data-dismiss="toast" aria-label="Close">¡Sí, bórralo!</button> ' +
+                '<button id="liveToastBtnNO" type="button" class="btn btn-sm btn-default " data-dismiss="toast" aria-label="Close">Cancelar</button> ' +
                 '</div> ' +
                 '</div> ' +
                 '</div> ' +
@@ -131,10 +131,7 @@ function toastBootstrap(options = { toast: true, type: 'success', }) {
 }
 
 window.flashToastBootstrap = async (flash) => {
-    var events = flash.events;
-    var data = flash.events.data;
-    var options = flash.options;
-    alert('hgola');
+    toastBootstrap(flash);
 };
 
-console.log('toastBootstrap.js');
+console.log('toastBootstrap');
