@@ -18,3 +18,8 @@
     left: 15px;
     top: 15px;
 }
+
+.buttons_disabled {
+    /*Para ser usado como selector en JS*/
+}
+

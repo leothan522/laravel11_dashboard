@@ -172,7 +172,7 @@ function qrCodeGenerate($string = 'Hello World!', $size = 100, $filename = 'qrco
 function verSpinner(): string
 {
     $spinner = '
-        <div class="overlay-wrapper" wire:loading>
+        <div class="overlay-wrapper verCargando" wire:loading>
             <div class="overlay">
                 <div class="spinner-border text-navy" role="status">
                     <span class="sr-only">Loading...</span>
