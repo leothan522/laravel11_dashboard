@@ -37,10 +37,10 @@ function verCargando(id, show = true) {
         let spinner = document.querySelector("#" + id + " .verCargando");
         if (spinner){
             if (show){
-                selector.classList.add('opacity-25');
+                //selector.classList.add('invisible');
                 spinner.classList.add('d-block');
             }else{
-                selector.classList.remove('opacity-25');
+                //selector.classList.remove('invisible');
                 spinner.classList.add('d-none');
             }
         }else {
@@ -75,5 +75,16 @@ function disabledButtons(selector = ".buttons_disabled") {
  */
 function destroyMessage(eventLivewire, rowquid) {
     confirmToastBootstrap(eventLivewire, { rowquid: rowquid });
+}
+
+
+/**
+ * Agrega la clase invisible al selector indicado
+ * Para ocultar el elemento mientras se muestra el cargando
+ *
+ * @param selector
+ */
+function addClassinvisible(selector) {
+    document.querySelector(selector).classList.add('invisible');
 }
 

@@ -4,7 +4,7 @@
 
 @section('content_header')
     <div class="container-fluid">
-        <div class="row mb-2">
+        <div class="row">
             <div class="col-sm-6">
                 <h1 class="m-0 text-dark"><i class="fas fa-users-cog"></i> Blank</h1>
             </div>
@@ -43,7 +43,7 @@
             let keyword  = input.val();
             if (keyword.length > 0){
                 input.blur();
-                toastBootstrap({ toast: true, type: 'error', message: 'Falta vincular con el componente Livewire.'})
+                alert('Falta vincular con el componente Livewire');
                 //Livewire.dispatch('buscar', { keyword: keyword });
             }
             return false;

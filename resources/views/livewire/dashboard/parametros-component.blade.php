@@ -1,4 +1,5 @@
 <div>
-    {{-- If you look to others for fulfillment, you will never truly be fulfilled. --}}
-    @include('dashboard.parametros.content')
+    {{-- Care about people's approval and you will be their prisoner. --}}
+    @include("dashboard.parametros.content")
+    @include("dashboard.parametros.scripts")
 </div>

@@ -1,43 +1,55 @@
-<div class="card card-navy card-outline" xmlns:wire="http://www.w3.org/1999/xhtml">
+<div id="div_table_parametros" class="card card-navy card-outline">
+
     <div class="card-header">
-        <h3 class="card-title">
+
+        <h3 class="card-title mb-2 mb-sm-auto">
             @if($keyword)
-                Búsqueda { <b class="text-primary">{{ $keyword }}</b> } [ <b class="text-primary">{{ $totalBusqueda }}</b> ]
-                <button class="btn btn-tool text-danger" wire:click="cerrarBusqueda"><i class="fas fa-times-circle"></i>
+                Búsqueda
+                <span class="text-nowrap">{ <b class="text-warning">{{ $keyword }}</b> }</span>
+                <span class="text-nowrap">[ <b class="text-warning">{{ $rows }}</b> ]</span>
+                <button class="d-sm-none btn btn-tool text-warning" wire:click="cerrarBusqueda">
+                    <i class="fas fa-times"></i>
                 </button>
             @else
-                Todos [ <b class="text-primary">{{ $rowsParametros }}</b> ]
+                Todos [ <b class="text-warning">{{ $rows }}</b> ]
             @endif
         </h3>
 
         <div class="card-tools">
-            <button type="button" class="btn btn-tool" wire:click="limpiar">
+            @if($keyword)
+                <button class="d-none d-sm-inline-block btn btn-tool text-warning" wire:click="cerrarBusqueda">
+                    <i class="fas fa-times"></i>
+                </button>
+            @endif
+            <button type="button" class="btn btn-tool" wire:click="actualizar">
                 <i class="fas fa-sync-alt"></i>
             </button>
             <button class="btn btn-tool" data-toggle="modal" data-target="#modal-default" wire:click="limpiar">
                 <i class="fas fa-file"></i> Nuevo
             </button>
-            <button type="button" class="btn btn-tool" wire:click="setLimit" @if(($rows >= $rowsParametros) || $rows > $totalBusqueda) disabled @endif >
+            <button type="button" class="btn btn-tool" wire:click="setLimit" @if($btnDisabled) disabled @endif >
                 <i class="fas fa-sort-amount-down-alt"></i> Ver más
             </button>
         </div>
+
     </div>
-    <div class="card-body table-responsive p-0" @if($tableStyle) style="height: 68vh;" @endif >
+
+    <div class="card-body table-responsive p-0" style="max-height: calc(100vh - {{ $size }}px)">
         <table class="table table-sm table-head-fixed table-hover text-nowrap">
             <thead>
-            <tr class="text-navy">
-                <th>id</th>
-                <th>nombre</th>
-                <th class="d-none d-md-table-cell">table_id</th>
-                <th class="d-none d-md-table-cell">valor</th>
-                <th style="width: 5%;">&nbsp;</th>
+            <tr class="text-lightblue">
+                <th class="text-center text-uppercase" style="width: 5%">id</th>
+                <th class="text-uppercase">nombre</th>
+                <th class="d-none d-md-table-cell text-uppercase">table_id</th>
+                <th class="d-none d-md-table-cell text-uppercase">valor</th>
+                <th class="text-center" style="width: 5%;"><small>Rows {{ $ListarParametros->count() }}</small></th>
             </tr>
             </thead>
-            <tbody>
-            @if($parametros->isNotEmpty())
-                @foreach($parametros as $parametro)
+            <tbody id="tbody_parametros" wire:loading.class="invisible" wire:target="actualizar, cerrarBusqueda, setLimit">
+            @if($ListarParametros->isNotEmpty())
+                @foreach($ListarParametros as $parametro)
                     <tr>
-                        <td class="text-bold">{{ $parametro->id }}</td>
+                        <td class="text-bold text-center">{{ $parametro->id }}</td>
                         <td class="d-table-cell text-truncate" style="max-width: 150px;">{{ $parametro->nombre }}</td>
                         <td class="d-none d-md-table-cell">
                             @if(is_null($parametro->tabla_id))
@@ -59,11 +71,13 @@
                         </td>
                         <td class="justify-content-end">
                             <div class="btn-group">
-                                <button wire:click="edit('{{ $parametro->rowquid }}')" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modal-default">
+                                <button wire:click="edit('{{ $parametro->rowquid }}')" class="btn btn-primary btn-sm"
+                                        data-toggle="modal" data-target="#modal-default">
                                     <i class="fas fa-edit"></i>
                                 </button>
 
-                                <button wire:click="destroy('{{ $parametro->rowquid }}')" class="btn btn-primary btn-sm">
+                                <button onclick="confirmToastBootstrap('delete',  { rowquid: '{{ $parametro->rowquid }}' })"
+                                        class="btn btn-primary btn-sm">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
@@ -84,12 +98,12 @@
 
             </tbody>
         </table>
-
     </div>
 
     <div class="card-footer">
-        <small>Mostrando {{ $parametros->count() }}</small>
+        <small>Mostrando {{ $ListarParametros->count() }}</small>
     </div>
 
-    {!! verSpinner() !!}
+    {!! verSpinner('actualizar, cerrarBusqueda, setLimit') !!}
+
 </div>

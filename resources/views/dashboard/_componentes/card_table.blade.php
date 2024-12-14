@@ -1,73 +1,109 @@
-<div class="card card-outline card-navy" xmlns:wire="http://www.w3.org/1999/xhtml">
+<div id="div_table_parametros" class="card card-navy card-outline">
+
     <div class="card-header">
-        <h3 class="card-title">
+
+        <h3 class="card-title mb-2 mb-sm-auto">
             @if($keyword)
-                Resultados de la Busqueda { <b class="text-danger">{{ $keyword }}</b> }
-                <button class="btn btn-tool text-danger" wire:click="limpiar">
-                    <i class="fas fa-times-circle"></i>
+                Búsqueda
+                <span class="text-nowrap">{ <b class="text-warning">{{ $keyword }}</b> }</span>
+                <span class="text-nowrap">[ <b class="text-warning">{{ $rows }}</b> ]</span>
+                <button class="d-sm-none btn btn-tool text-warning" wire:click="cerrarBusqueda">
+                    <i class="fas fa-times"></i>
                 </button>
             @else
-                Fixed Header Table
+                Todos [ <b class="text-warning">{{ $rows }}</b> ]
             @endif
         </h3>
 
         <div class="card-tools">
-            <button type="button" class="btn btn-tool" wire:click="limpiar">
+            @if($keyword)
+                <button class="d-none d-sm-inline-block btn btn-tool text-warning" wire:click="cerrarBusqueda">
+                    <i class="fas fa-times"></i>
+                </button>
+            @endif
+            <button type="button" class="btn btn-tool" wire:click="actualizar">
                 <i class="fas fa-sync-alt"></i>
             </button>
-            <ul class="pagination pagination-sm float-right">
-                <li class="page-item"><a class="page-link" href="#">«</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">»</a></li>
-            </ul>
+            <button class="btn btn-tool" data-toggle="modal" data-target="#modal-default" wire:click="limpiar">
+                <i class="fas fa-file"></i> Nuevo
+            </button>
+            <button type="button" class="btn btn-tool" wire:click="setLimit" @if($btnDisabled) disabled @endif >
+                <i class="fas fa-sort-amount-down-alt"></i> Ver más
+            </button>
         </div>
+
     </div>
-    <div class="card-body table-responsive p-0" {{--style="height: 400px;"--}}>
-        <table class="table {{--table-head-fixed--}} table-hover text-nowrap">
+
+    <div class="card-body table-responsive p-0" style="max-height: calc(100vh - {{ $size }}px)">
+        <table class="table table-sm table-head-fixed table-hover text-nowrap">
             <thead>
-            <tr class="text-navy">
-                <th>ID</th>
-                <th>User</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th style="width: 5%;">Reason</th>
+            <tr class="text-lightblue">
+                <th class="text-center text-uppercase" style="width: 5%">id</th>
+                <th class="text-uppercase">nombre</th>
+                <th class="d-none d-md-table-cell text-uppercase">table_id</th>
+                <th class="d-none d-md-table-cell text-uppercase">valor</th>
+                <th class="text-center" style="width: 5%;"><small>Rows {{ $ListarParametros->count() }}</small></th>
             </tr>
             </thead>
-            <tbody>
-            <tr>
-                <td>183</td>
-                <td>John Doe</td>
-                <td>11-7-2014</td>
-                <td><span class="tag tag-success">Approved</span></td>
-                <td class="justify-content-end">
-                    <div class="btn-group">
-                        <button {{--wire:click="edit({{ $parametro->id }})"--}} class="btn btn-primary btn-sm">
-                            <i class="fas fa-edit"></i>
-                        </button>
+            <tbody id="tbody_parametros" wire:loading.class="invisible" wire:target="actualizar, cerrarBusqueda, setLimit">
+            @if(/*$ListarParametros->isNotEmpty()*/false)
+                @foreach($ListarParametros as $parametro)
+                    <tr>
+                        <td class="text-bold text-center">{{ $parametro->id }}</td>
+                        <td class="d-table-cell text-truncate" style="max-width: 150px;">{{ $parametro->nombre }}</td>
+                        <td class="d-none d-md-table-cell">
+                            @if(is_null($parametro->tabla_id))
+                                null
+                            @else
+                                {{ $parametro->tabla_id }}
+                            @endif
+                        </td>
+                        <td class="d-none d-md-table-cell text-truncate" style="max-width: 150px;">
+                            @if(is_null($parametro->valor))
+                                null
+                            @else
+                                @if($parametro->tabla_id == "-1")
+                                    json{...}
+                                @else
+                                    {{ $parametro->valor }}
+                                @endif
+                            @endif
+                        </td>
+                        <td class="justify-content-end">
+                            <div class="btn-group">
+                                <button wire:click="edit('{{ $parametro->rowquid }}')" class="btn btn-primary btn-sm"
+                                        data-toggle="modal" data-target="#modal-default">
+                                    <i class="fas fa-edit"></i>
+                                </button>
 
-                        <button {{--wire:click="destroy({{ $parametro->id }})"--}} class="btn btn-primary btn-sm">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>219</td>
-                <td>Alexander Pierce</td>
-                <td>11-7-2014</td>
-                <td><span class="tag tag-warning">Pending</span></td>
-                <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-            </tr>
-            <tr>
-                <td>657</td>
-                <td>Bob Doe</td>
-                <td>11-7-2014</td>
-                <td><span class="tag tag-primary">Approved</span></td>
-                <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-            </tr>
+                                <button onclick="confirmToastBootstrap('delete',  { rowquid: '{{ $parametro->rowquid }}' })"
+                                        class="btn btn-primary btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            @else
+                <tr class="text-center">
+                    <td colspan="5">
+                        @if($keyword)
+                            <span>Sin resultados</span>
+                        @else
+                            <span>Sin registros guardados</span>
+                        @endif
+                    </td>
+                </tr>
+            @endif
+
             </tbody>
         </table>
     </div>
+
+    <div class="card-footer">
+        <small>Mostrando 0{{--{{ $ListarParametros->count() }}--}}</small>
+    </div>
+
+    {!! verSpinner('actualizar, cerrarBusqueda, setLimit') !!}
+
 </div>

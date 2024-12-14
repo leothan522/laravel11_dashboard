@@ -13,6 +13,8 @@ class Parametro extends Model
 
     public function scopeBuscar($query, $keyword)
     {
-        return $query->where('nombre', 'LIKE', "%$keyword%");
+        return $query->where('nombre', 'LIKE', "%$keyword%")
+            ->orWhere('tabla_id', 'LIKE', "%$keyword%")
+            ->orWhere('valor', 'LIKE', "%$keyword%");
     }
 }

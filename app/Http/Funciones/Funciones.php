@@ -169,12 +169,15 @@ function qrCodeGenerate($string = 'Hello World!', $size = 100, $filename = 'qrco
     return "QRCode";
 }
 
-function verSpinner(): string
+function verSpinner($target = null): string
 {
+    if (!empty($target)){
+        $target = 'wire:target="'.$target.'"';
+    }
     $spinner = '
-        <div class="overlay-wrapper verCargando" wire:loading>
-            <div class="overlay">
-                <div class="spinner-border text-navy" role="status">
+        <div class="overlay-wrapper verCargando" wire:loading '.$target.'>
+            <div class="overlay bg-transparent">
+                <div class="spinner-border text-primary" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
@@ -211,44 +214,6 @@ function cerosIzquierda($cantidad, $cantCeros = 2): int|string
         return 0;
     }
     return str_pad($cantidad, $cantCeros, "0", STR_PAD_LEFT);
-}
-
-function nextCodigo($parametros_nombre, $parametros_tabla_id, $nombre_formato = null): string
-{
-
-    $next = 1;
-    $codigo = null;
-
-    //buscamos algun formato para el codigo
-    if (!is_null($nombre_formato)){
-        $parametro = Parametro::where("nombre", $nombre_formato)->where('tabla_id', $parametros_tabla_id)->first();
-        if ($parametro) {
-            $codigo = $parametro->valor;
-        }else{
-            $codigo = "N".$parametros_tabla_id.'-';
-        }
-    }
-
-    //buscamos el proximo numero
-    $parametro = Parametro::where("nombre", $parametros_nombre)->where('tabla_id', $parametros_tabla_id)->first();
-    if ($parametro){
-        $next = $parametro->valor;
-        $parametro->valor = $next + 1;
-        $parametro->save();
-    }else{
-        $parametro = new Parametro();
-        $parametro->nombre = $parametros_nombre;
-        $parametro->tabla_id = $parametros_tabla_id;
-        $parametro->valor = 2;
-        $parametro->save();
-    }
-
-    if (!is_int($next)){ $next = 1; }
-
-    $size = cerosIzquierda($next, numSizeCodigo());
-
-    return $codigo . $size;
-
 }
 
 function crearMiniaturas($imagen_data, $path_data, $opcion = 'mini'): array
