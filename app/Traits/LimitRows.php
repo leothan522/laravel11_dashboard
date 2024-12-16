@@ -8,9 +8,15 @@ trait LimitRows
     public int $limit = 0;
     public bool $btnDisabled = true;
 
-    public function setLimit(): void
+    public function setLimit(array $limits = []): void
     {
-        $this->limit = $this->limit + numRowsPaginate();
+        if (empty($limits)){
+            $this->limit = $this->limit + numRowsPaginate();
+        }else{
+            foreach ($limits as $key){
+                $this->$key = $this->$key + numRowsPaginate();
+            }
+        }
     }
 
     public function setSize($size): void
@@ -18,12 +24,25 @@ trait LimitRows
         $this->size = $size;
     }
 
-    public function btnVerMas($limit, $rows): void
+    public function btnVerMas($limit, $rows, array $buttons = []): void
     {
         if ($rows > $limit) {
-            $this->btnDisabled = false;
+            if (empty($buttons)){
+                $this->btnDisabled = false;
+            }else{
+                foreach ($buttons as $button){
+                    $this->$button = false;
+                }
+            }
+
         }else{
-            $this->btnDisabled = true;
+            if (empty($buttons)){
+                $this->btnDisabled = true;
+            }else{
+                foreach ($buttons as $button){
+                    $this->$button = true;
+                }
+            }
         }
     }
 

@@ -40,8 +40,8 @@
             <tr class="text-lightblue">
                 <th class="text-center text-uppercase" style="width: 5%">id</th>
                 <th class="text-uppercase">nombre</th>
-                <th class="d-none d-md-table-cell text-uppercase">table_id</th>
-                <th class="d-none d-md-table-cell text-uppercase">valor</th>
+                <th class="d-none d-sm-table-cell text-uppercase">table_id</th>
+                <th class="d-none d-sm-table-cell text-uppercase">valor</th>
                 <th class="text-center" style="width: 5%;"><small>Rows {{ $ListarParametros->count() }}</small></th>
             </tr>
             </thead>
@@ -49,16 +49,16 @@
             @if($ListarParametros->isNotEmpty())
                 @foreach($ListarParametros as $parametro)
                     <tr>
-                        <td class="text-bold text-center">{{ $parametro->id }}</td>
-                        <td class="d-table-cell text-truncate" style="max-width: 150px;">{{ $parametro->nombre }}</td>
-                        <td class="d-none d-md-table-cell">
+                        <td class="align-middle text-bold text-center">{{ $parametro->id }}</td>
+                        <td class="align-middle d-table-cell text-truncate" style="max-width: 150px;">{{ $parametro->nombre }}</td>
+                        <td class="align-middle d-none d-sm-table-cell">
                             @if(is_null($parametro->tabla_id))
                                 null
                             @else
                                 {{ $parametro->tabla_id }}
                             @endif
                         </td>
-                        <td class="d-none d-md-table-cell text-truncate" style="max-width: 150px;">
+                        <td class="align-middle d-none d-sm-table-cell text-truncate" style="max-width: 150px;">
                             @if(is_null($parametro->valor))
                                 null
                             @else
@@ -70,7 +70,16 @@
                             @endif
                         </td>
                         <td class="justify-content-end">
-                            <div class="btn-group">
+
+                            <div class="btn-group d-sm-none">
+                                <button wire:click="edit('{{ $parametro->rowquid }}')" class="btn btn-primary"
+                                        data-toggle="modal" data-target="#modal-default">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <div class="btn-group d-none d-sm-flex">
+
                                 <button wire:click="edit('{{ $parametro->rowquid }}')" class="btn btn-primary btn-sm"
                                         data-toggle="modal" data-target="#modal-default">
                                     <i class="fas fa-edit"></i>
@@ -80,7 +89,9 @@
                                         class="btn btn-primary btn-sm">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
+
                             </div>
+
                         </td>
                     </tr>
                 @endforeach

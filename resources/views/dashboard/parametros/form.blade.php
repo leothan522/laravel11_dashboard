@@ -54,6 +54,10 @@
 
                     <div class="row col-12 justify-content-between" wire:loading.class="invisible" wire:target="limpiar, edit">
                         <button type="button" class="btn btn-default" data-dismiss="modal" id="btn_modal_default">Cerrar</button>
+                        <button type="button" onclick="confirmToastBootstrap('delete',  { rowquid: '{{ $rowquid }}' })"
+                                class="btn btn-danger d-sm-none">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                         <button type="submit" class="btn  @if($view == "edit") btn-primary @else btn-success @endif ">
                             Guardar @if($view == "edit") Cambios @endif
                         </button>

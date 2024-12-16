@@ -2,8 +2,10 @@
     <script src="{{ asset("js/app.js") }}"></script>
     <script>
 
+        const btnCerrarModal = document.querySelector("#btn_modal_default");
+
         Livewire.on('cerrarModal', () => {
-            $("#btn_modal_default").click();
+            btnCerrarModal.click();
             setTimeout(function () {
                 addClassinvisible("#tbody_parametros");
                 verCargando('div_table_parametros');
@@ -11,6 +13,7 @@
         });
 
         Livewire.on('delete', () => {
+            btnCerrarModal.click();
             addClassinvisible("#tbody_parametros");
             verCargando('div_table_parametros');
         });
