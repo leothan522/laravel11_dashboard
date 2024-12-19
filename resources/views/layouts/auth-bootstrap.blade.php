@@ -74,6 +74,7 @@
     </style>
 
     @livewireStyles
+    @yield('css')
 </head>
 <body style="background-color: #eee;">
 
@@ -89,22 +90,14 @@
                         <div class="col-lg-6">
                             <div class="card-body p-md-5 mx-md-4">
 
-                                <div class="text-center mt-5 pt-5">
-                                    <img class="img-fluid mt-lg-5" src="{{ asset('img/logo.svg') }}" alt="logo">
-                                    <h6 class="mt-1 mb-5 pb-1 text_title"><strong>{{ mb_strtoupper(env('APP_NAME', 'Laravel')) }}</strong></h6>
+                                <div class="text-center mt-5 mt-sm-auto">
+                                    <a href="{{ route('web.index') }}">
+                                        <img class="img-fluid" src="{{ asset('img/logo.svg') }}" alt="logo">
+                                    </a>
+                                    <h6 class="mt-1 mb-4 pb-1 text_title text-uppercase"><strong>{{ env('APP_NAME', 'Laravel') }}</strong></h6>
                                 </div>
 
-                                <div class="text-center pt-1 mb-5 pb-1">
-                                    @auth
-                                        <a class="text-muted" href="{{ route('profile.show') }}">{{ __('Profile') }}</a>
-                                        <a class="text-muted ms-3" href="{{ url('/dashboard') }}">Dashboard</a>
-                                    @else
-                                        <a class="text-muted" href="{{ route('login') }}">{{ __('Log in') }}</a>
-                                        @if (Route::has('register'))
-                                            <a class="text-muted ms-3" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                        @endif
-                                    @endauth
-                                </div>
+                                @yield('content')
 
                             </div>
                         </div>
@@ -123,9 +116,31 @@
     </div>
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 @livewireScripts
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<x-livewire-alert::scripts />
+<script type="application/javascript">
+    (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                } else {
+                    form.classList.add('opacity-50');
+                    document.querySelector(".verCargando").classList.remove('d-none');
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })();
+</script>
+@yield('js')
 </body>
 </html>
