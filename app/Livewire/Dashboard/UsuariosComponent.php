@@ -4,12 +4,9 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\Parametro;
 use App\Models\User;
+use App\Traits\LimitRows;
 use App\Traits\ToastBootstrap;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Sleep;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Jantinnerezo\LivewireAlert\LivewireAlert;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -17,277 +14,167 @@ use Livewire\Component;
 class UsuariosComponent extends Component
 {
     use ToastBootstrap;
+    use LimitRows;
 
-    public $rows = 0, $numero = 14, $tableStyle = false;
-    public $view = "create", $keyword;
-    public $name, $email, $password, $role;
-    public $edit_name, $edit_email, $edit_password, $edit_role = 0, $edit_roles_id = 0, $created_at, $estatus = 1, $photo;
-    public $rol_nombre, $tabla = 'usuarios', $getPermisos, $cambios = false;
+    public $keyword, $title = "Crear Usuario", $btnNuevo = true, $form = false;
+    public $name, $email, $password, $role, $newPassword, $btnEditar = false;
+    public $verName, $verEmail, $verEstatus, $verRegistro, $verRole, $estatus, $btnEstatus, $btnReset, $verEditar, $verBorrar;
+    public $listarRoles = [];
+    public bool $ocultarTable = false, $ocultarCard = true;
 
     #[Locked]
     public $users_id, $rowquid;
 
+
     public function mount()
     {
         $this->setLimit();
+        $this->listarRoles = $this->getRoles();
+        $this->show($this->getLastUser());
     }
 
     public function render()
     {
-        $roles = $this->getRoles();
-
-        $users = User::buscar($this->keyword)
+        $usuarios = User::buscar($this->keyword)
             ->orderBy('created_at', 'DESC')
-            ->limit($this->rows)
+            ->limit($this->limit)
             ->get();
-
-        $total = User::buscar($this->keyword)->count();
-
-        $rows = User::count();
-
-        if ($rows > $this->numero) {
-            $this->tableStyle = true;
-        }
+        $limit = $usuarios->count();
+        $rows = User::buscar($this->keyword)->count();
+        $this->btnVerMas($limit, $rows);
 
         return view('livewire.dashboard.usuarios-component')
-            ->with('listarRoles', $roles)
-            ->with('listarUsers', $users)
-            ->with('rowsUsuarios', $rows)
-            ->with('totalBusqueda', $total);
+            ->with('listarUsuarios', $usuarios)
+            ->with('rows', $rows);
     }
 
-    public function setLimit()
-    {
-        if (numRowsPaginate() < $this->numero) {
-            $rows = $this->numero;
-        } else {
-            $rows = numRowsPaginate();
-        }
-        $this->rows = $this->rows + $rows;
-    }
-
-    #[On('limpiar')]
     public function limpiar()
     {
         $this->reset([
-            'view', 'name', 'email', 'password', 'role', 'users_id', 'rowquid',
-            'edit_name', 'edit_email', 'edit_password', 'edit_role', 'edit_roles_id', 'created_at', 'estatus',
-            'photo', 'rol_nombre', 'getPermisos', 'cambios'
+            'title', 'btnNuevo', 'form',
+            'name', 'email', 'password', 'role', 'newPassword', 'btnEditar',
+            'users_id',
         ]);
         $this->resetErrorBag();
     }
 
-    public function generarClave()
+    public function create()
     {
-        $this->password = Str::password(8);
+        $this->limpiar();
+        $this->listarRoles = $this->getRoles();
+        $this->btnNuevo = false;
+        $this->form = true;
     }
-
-    protected function rules($id = null)
-    {
-        if ($id) {
-            $rules = [
-                'edit_name' => 'required|min:4',
-                'edit_email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
-            ];
-        } else {
-            $rules = [
-                'name' => 'required|min:4',
-                'email' => ['required', 'email', Rule::unique('users')],
-                'password' => 'required|min:8',
-                'role' => 'required'
-            ];
-        }
-        return $rules;
-    }
-
-    protected $messages = [
-
-        'edit_name.required' => 'El campo nombre es obligatorio.',
-        'edit_name.min' => 'El campo nombre debe contener al menos 4 caracteres.',
-        'edit_email.required' => 'El campo correo electrónico es obligatorio.',
-        'edit_email.email' => 'El campo correo electrónico no es un correo válido.',
-
-    ];
 
     public function save()
     {
-        if (is_null($this->users_id)) {
+        $rules = [
+            'name' => 'required|min:4',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->users_id)],
+            'password' => [Rule::requiredIf(!$this->users_id), 'nullable','min:8'],
+            'role' => 'required'
+        ];
+        $messages = [];
+        $this->validate($rules, $messages);
 
-            $parametro = $this->getRol($this->role);
-            if ($parametro){
-                if ($parametro->tabla_id == -2){
-                    $this->role = intval($parametro->valor) ?? 0;
-                }
-            }else{
-                $this->reset('role');
-            }
-
-            $this->validate($this->rules());
-
-            //nuevo
-            $usuarios = new User();
-            $usuarios->name = ucwords($this->name);
-            $usuarios->email = strtolower($this->email);
-            $usuarios->password = Hash::make($this->password);
-
-            if (!is_int($this->role)) {
-                $usuarios->role = 2;
-                $usuarios->roles_id = $parametro->id;
-                $usuarios->permisos = $parametro->valor;
-            } else {
-                $usuarios->role = $this->role;
-                $usuarios->roles_id = null;
-            }
-
+        if ($this->users_id){
+            //editar
+            $user = User::find($this->users_id);
+        }else{
+            $user = new User();
             do{
                 $rowquid = generarStringAleatorio(16);
                 $existe = User::where('rowquid', $rowquid)->first();
             }while($existe);
+            $user->rowquid = $rowquid;
+            $user->password = \Hash::make($this->password);
+        }
 
-            $usuarios->rowquid = $rowquid;
-            $usuarios->save();
-            $this->reset('keyword');
-            $this->limpiar();
-            $this->dispatch('cerrarModal', selector: 'btn_modal_default_create');
-            Sleep::for(500)->millisecond();
-            $this->toastBootstrap();
-        } else {
-
-            $this->validate($this->rules($this->users_id));
-
-            //editar
-            $usuarios = User::find($this->users_id);
-            if ($usuarios){
-                $usuarios->name = ucwords($this->edit_name);
-                $usuarios->email = strtolower($this->edit_email);
-                if (!is_null($this->edit_role)){
-                    $parametro = $this->getRol($this->edit_role);
-                    if ($parametro){
-                        if ($parametro->tabla_id == -2){
-                            $usuarios->role = intval($parametro->valor) ?? 0;
-                            $usuarios->roles_id = null;
-                            $usuarios->permisos = null;
-                        }else{
-                            $usuarios->role = 2;
-                            $usuarios->roles_id = $parametro->id;
-                            $usuarios->permisos = $parametro->valor;
-                        }
-                    }else{
-                        $usuarios->role = 0;
-                        $usuarios->roles_id = null;
-                        $usuarios->permisos = null;
-                    }
+        if ($user){
+            $user->name = $this->name;
+            $user->email = $this->email;
+            $parametro = $this->getRol($this->role);
+            if ($parametro){
+                if ($parametro->tabla_id == -2){
+                    $user->role = intval($parametro->valor) ?? 0;
+                    $user->roles_id = null;
+                    $user->permisos = null;
+                }else{
+                    $user->role = 2;
+                    $user->roles_id = $parametro->id;
+                    $user->permisos = $parametro->valor;
                 }
-                $usuarios->save();
-                $this->edit($usuarios->rowquid);
-                $this->toastBootstrap();
-            }else{
-                $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
             }
+            $user->save();
+            $this->show($user->rowquid);
+            $this->toastBootstrap();
         }
     }
 
-    public function edit($rowquid)
+    public function show($rowquid)
     {
         $this->limpiar();
-        $usuario = $this->getUser($rowquid);
-        if ($usuario){
-            $this->users_id = $usuario->id;
-            $this->edit_name = $usuario->name;
-            $this->edit_email = $usuario->email;
-            $this->edit_role = null;
-            if ($usuario->role != 100){
-                if ($usuario->roles_id) {
-                    $parametro = Parametro::find($usuario->roles_id);
-                    if ($parametro){
-                        $this->edit_role = $parametro->rowquid;
-                    }
-                }else{
-                    $parametro = Parametro::where('tabla_id', -2)->where('valor', $usuario->role)->first();
-                    if ($parametro){
-                        $this->edit_role = $parametro->rowquid;
-                    }
-                }
+        $user = $this->getUser($rowquid);
+        if ($user){
+            $this->verName = $user->name;
+            $this->verEmail = $user->email;
+            $this->verRole = verRole($user->role, $user->roles_id);
+            $this->verEstatus = $this->getEstatusUsuario($user->estatus);
+            $this->verRegistro = haceCuanto($user->created_at);
+            $this->estatus = $user->estatus;
+            $this->btnEstatus = $this->getComprobarPermisos($user, 'usuarios.estatus');
+            $this->btnReset = $this->getComprobarPermisos($user, 'usuarios.password');
+            $this->verEditar = $this->getComprobarPermisos($user);
+            $this->verBorrar = $this->getComprobarPermisos($user, 'usuarios.destroy');
+            $this->users_id = $user->id;
+            $this->rowquid = $user->rowquid;
+            $this->name = $user->name;
+            $this->email = $user->email;
+            $role = $user->role;
+            $roles_id = $user->roles_id;
+            if ($role < 2){
+                $parametro = Parametro::where('tabla_id', -2)->where('valor', $role)->first();
+            }else{
+                $parametro = Parametro::find($roles_id);
             }
-            $this->edit_roles_id = $usuario->role;
-            $this->estatus = $usuario->estatus;
-            $this->created_at = $usuario->created_at;
-            $this->photo = $usuario->profile_photo_path;
-            $this->rol_nombre = verRole($usuario->role, $usuario->roles_id);
-            $this->getPermisos = $usuario->permisos;
-            $this->rowquid = $rowquid;
-        }else{
-            Sleep::for(500)->millisecond();
-            $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
+            if ($parametro){
+                $this->role = $parametro->rowquid;
+            }
+
         }
     }
 
-    public function cambiarEstatus($rowquid)
+    public function edit($rowquid = null)
     {
-        $usuario = $this->getUser($rowquid);
-        if ($usuario){
-            if ($usuario->estatus) {
-                $usuario->estatus = 0;
-                $alert = "warning";
-                $texto = "Usuario Suspendido.";
-            } else {
-                $usuario->estatus = 1;
-                $alert = "success";
-                $texto = "Usuario Activado.";
-            }
-            $usuario->update();
-            $this->estatus = $usuario->estatus;
-            $this->toastBootstrap($alert, $texto);
+        $this->listarRoles = $this->getRoles();
+        if (!empty($rowquid)){
+            $this->show($rowquid);
         }else{
-            $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
+            $this->show($this->rowquid);
+        }
+        $this->title = "Editar Usuario";
+        $this->btnEditar = true;
+        $this->form = true;
+    }
+
+    #[On('delete')]
+    public function delete($rowquid)
+    {
+        $user = $this->getUser($rowquid);
+        if ($user){
+            $nombre = '<b class="text-uppercase text-warning">'.$user->name.'</b>';
+            $user->delete();
+            $this->show($this->getLastUser());
+            $this->toastBootstrap('success', "Usuario $nombre eliminado.");
         }
     }
 
-    public function restablecerClave($rowquid)
+    #[On('deleteHide')]
+    public function deleteHide($rowquid)
     {
-        $usuario = $this->getUser($rowquid);
-        if ($usuario){
-            if (!$this->edit_password) {
-                $clave = Str::password(8);
-            } else {
-                $clave = $this->edit_password;
-            }
-            $usuario->password = Hash::make($clave);
-            $usuario->update();
-            $this->edit_password = $clave;
-            $this->toastBootstrap('info', 'Contraseña Restablecida.');
-        }else{
-            $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
-        }
-    }
-
-    public function destroy($rowquid)
-    {
-        $this->rowquid = $rowquid;
-        $this->confirmToastBootstrap('confirmedUser');
-
-    }
-
-    #[On('confirmedUser')]
-    public function confirmedUser()
-    {
-        $usuario = $this->getUser($this->rowquid);
-        if ($usuario){
-            //codigo para verificar si realmente se puede borrar, dejar false si no se requiere validacion
-            $vinculado = false;
-
-            if ($vinculado) {
-                $this->htmlToastBoostrap();
-            } else {
-                $usuario->delete();
-                $this->limpiar();
-                $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
-                Sleep::for(500)->millisecond();
-                $this->toastBootstrap('info', 'Usuario Eliminado.');
-            }
-        }else{
-            $this->dispatch('cerrarModal', selector: 'button_edit_modal_cerrar');
-        }
+        $this->delete($rowquid);
+        $this->ocultarCard = true;
+        $this->ocultarTable = false;
     }
 
     #[On('buscar')]
@@ -296,44 +183,86 @@ class UsuariosComponent extends Component
         $this->keyword = $keyword;
     }
 
-    #[On('cerrarModal')]
-    public function cerrarModal($selector)
+    public function cerrarBusqueda()
     {
-        //JS
+        $this->reset(['keyword']);
     }
 
-    public function setPermisos($permiso)
+    public function actualizar()
     {
-        $permisos = [];
-        if (!leerJson($this->getPermisos, $permiso)){
-            $permisos = json_decode($this->getPermisos, true);
-            $permisos[$permiso] = true;
-            $permisos = json_encode($permisos);
-        }else{
-            $permisos = json_decode($this->getPermisos, true);
-            unset($permisos[$permiso]);
-            $permisos = json_encode($permisos);
-        }
-        $this->getPermisos = $permisos;
-        $this->cambios = true;
+        //refresh
     }
 
-    public function savePermisos(){
-        $usuario = User::find($this->users_id);
-        if ($usuario){
-            $usuario->permisos = $this->getPermisos;
-            $usuario->save();
-            $this->reset('cambios');
-            $this->toastBootstrap();
+    public function cancel()
+    {
+        if ($this->rowquid){
+            $this->show($this->rowquid);
         }else{
-            $this->dispatch('cerrarModal', selector: 'button_permisos_modal_cerrar');
+            $this->limpiar();
         }
     }
 
-    public function deletePermisos()
+    public function getComprobarPermisos($user, $permiso = "usuarios.edit"): bool
     {
-        $this->reset('getPermisos');
-        $this->cambios = true;
+        return (!comprobarPermisos($permiso) || $user->role == 100) || (!comprobarPermisos() && ($user->role == 100 || $user->role == 1)) || $user->id == auth()->id();
+    }
+
+    public function showHide($rowquid = null)
+    {
+        if ($rowquid){
+            $this->ocultarTable = true;
+            $this->ocultarCard = false;
+            $this->show($rowquid);
+        }else{
+            $this->ocultarTable = false;
+            $this->ocultarCard = true;
+        }
+    }
+
+    public function editHide()
+    {
+        $this->ocultarCard = true;
+        $this->ocultarTable = false;
+        $this->edit();
+    }
+
+    public function generatePassword()
+    {
+        $this->password = \Str::password(8);
+    }
+
+    public function setEstatus()
+    {
+        $user = User::find($this->users_id);
+        if ($user){
+            if ($user->estatus){
+                $user->estatus = 0;
+                $message = "Usuario Suspendido.";
+            }else{
+                $user->estatus = 1;
+                $message = "Usuario Activado.";
+            }
+            $user->save();
+            $this->estatus = $user->estatus;
+            $this->verEstatus = $this->getEstatusUsuario($user->estatus);
+            $this->toastBootstrap('info', $message);
+        }
+    }
+
+    public function resetPassword()
+    {
+        $user = User::find($this->users_id);
+        if ($user){
+            if (!$this->newPassword){
+                $password = \Str::password(8);
+            }else{
+                $password = $this->newPassword;
+            }
+            $user->password = \Hash::make($password);
+            $user->save();
+            $this->newPassword = $password;
+            $this->toastBootstrap('success', "Contraseña Restablecida.");
+        }
     }
 
     public function getEstatusUsuario($i, $icon = null): string
@@ -348,26 +277,24 @@ class UsuariosComponent extends Component
         $status = [
             '0' => '<span class="text-danger">'.$suspendido.'</span>',
             '1' => '<span class="text-success">'.$activado.'</span>',
-            /*'2' => '<span class="text-success">Confirmado</span>'*/
         ];
         return $status[$i];
     }
 
-    #[On('actualizar')]
-    public function actualizar()
+    #[On('selectRoles')]
+    public function selectRoles()
     {
-        //JS
+        $this->listarRoles = $this->getRoles();
     }
 
-    public function cerrarBusqueda()
+    protected function getLastUser(): string
     {
-        $this->reset(['keyword']);
-        $this->limpiar();
-    }
-
-    protected function getUser($rowquid): ?User
-    {
-        return User::where('rowquid', $rowquid)->first();
+        $last = '';
+        $user = User::orderBy('created_at', 'DESC')->first();
+        if ($user){
+            $last = $user->rowquid;
+        }
+        return $last;
     }
 
     protected function getRoles()
@@ -400,6 +327,11 @@ class UsuariosComponent extends Component
     protected function getRol($rowquid): ?Parametro
     {
         return Parametro::where('rowquid', $rowquid)->first();
+    }
+
+    protected function getUser($rowquid): ?User
+    {
+        return User::where('rowquid', $rowquid)->first();
     }
 
 }

@@ -88,3 +88,19 @@ function addClassinvisible(selector) {
     document.querySelector(selector).classList.add('invisible');
 }
 
+/**
+ * Copiar texto al portapapeles
+ *
+ * @param texto
+ */
+function copiarPortapapeles(texto) {
+    navigator.clipboard.writeText(texto)
+        .then(() => {
+            toastBootstrap({ type: 'info', message: "Texto copiado al portapapeles", toast: true});
+            console.log('Texto copiado al portapapeles');
+        })
+        .catch(err => {
+            console.error('Error al copiar al portapapeles:', err)
+        });
+}
+

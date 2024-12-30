@@ -42,33 +42,25 @@
                 </div>
             </div>
 
-            @if(!$btnEditar)
-                <div class="form-group">
-                    <small class="text-lightblue text-bold text-uppercase">{{ __('Password') }}:</small>
-                    <div class="input-group">
-                        <input type="text" wire:model="password" class="form-control @error('password') is-invalid @enderror" placeholder="{{ __('Password') }}">
-                        <div class="input-group-append">
-                            <button type="button" wire:click="generatePassword" class="input-group-text"><i class="fas fa-key"></i></button>
-                        </div>
-                        @error('password')
-                        <span class="error invalid-feedback text-bold">{{ $message }}</span>
-                        @enderror
-                    </div>
+            <div class="form-group">
+                <small class="text-lightblue text-bold text-uppercase">{{ __('Password') }}:</small>
+                <div class="input-group">
+                    <input type="password" wire:model="password" class="form-control @error('password') is-invalid @enderror" placeholder="{{ __('Password') }}">
+                    @error('password')
+                    <span class="error invalid-feedback text-bold">{{ $message }}</span>
+                    @enderror
                 </div>
-            @endif
+            </div>
 
             <div class="form-group">
-                <small class="text-lightblue text-bold text-uppercase">{{ __('Role') }}:</small>
+                <small class="text-lightblue text-bold text-uppercase">Moneda Base:</small>
                 <div class="input-group">
-                    <select class="custom-select @error('role') is-invalid @enderror" wire:model="role">
+                    <select class="custom-select @error('moneda') is-invalid @enderror" wire:model="moneda">
                         <option value="">Seleccione</option>
-                        @foreach($listarRoles as $role)
-                            @if($role->tabla_id == -1 || $role->valor == 0 || auth()->user()->role == 1 || auth()->user()->role == 100)
-                                <option value="{{ $role->rowquid }}">{{ ucwords($role->nombre) }}</option>
-                            @endif
-                        @endforeach
+                        <option value="Bolivares">Bolivares</option>
+                        <option value="Dolares">Dolares</option>
                     </select>
-                    @error('role')
+                    @error('moneda')
                     <span class="error invalid-feedback text-bold">{{ $message }}</span>
                     @enderror
                 </div>
@@ -86,7 +78,7 @@
 
     </div>
 
-    {!! verSpinner('create, cancel, save, generatePassword') !!}
+    {!! verSpinner('create, cancel, save') !!}
 
 </div>
 

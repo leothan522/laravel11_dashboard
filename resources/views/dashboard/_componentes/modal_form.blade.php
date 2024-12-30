@@ -5,11 +5,12 @@
 
                 <div class="modal-header bg-navy">
                     <h4 class="modal-title" wire:loading.class="invisible" wire:target="limpiar">
-                        @if($view == "create")
-                            Crear Parametro
+                        @if($parametros_id)
+                            Crear
                         @else
-                            Editar Parametro
+                            Editar
                         @endif
+                            Parametro
                     </h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span class="text-white" aria-hidden="true">×</span>
@@ -54,8 +55,8 @@
 
                     <div class="row col-12 justify-content-between" wire:loading.class="invisible" wire:target="limpiar, edit">
                         <button type="button" class="btn btn-default" data-dismiss="modal" id="btn_modal_default">Cerrar</button>
-                        <button type="submit" class="btn  @if($view == "edit") btn-primary @else btn-success @endif ">
-                            Guardar @if($view == "edit") Cambios @endif
+                        <button type="submit" class="btn  @if($parametros_id) btn-primary @else btn-success @endif ">
+                            Guardar @if($parametros_id) Cambios @endif
                         </button>
                     </div>
 

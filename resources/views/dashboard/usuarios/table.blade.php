@@ -1,93 +1,115 @@
-<div class="card card-navy card-outline" xmlns:wire="http://www.w3.org/1999/xhtml">
-    <div class="card-header">
-        <h3 class="card-title">
+<div id="div_table_usuarios" class="card card-navy card-outline">
+
+    <div class="card-header" wire:loading.class="invisible" wire:target="create, edit, showHide">
+
+        <h3 class="card-title mb-2 mb-sm-auto">
             @if($keyword)
-                Búsqueda { <b class="text-primary">{{ $keyword }}</b> } [ <b class="text-primary">{{ $totalBusqueda }}</b> ]
-                <button class="btn btn-tool text-danger" wire:click="cerrarBusqueda">
-                    <i class="fas fa-times-circle"></i>
+                Búsqueda
+                <span class="text-nowrap">{ <b class="text-warning">{{ $keyword }}</b> }</span>
+                <span class="text-nowrap">[ <b class="text-warning">{{ $rows }}</b> ]</span>
+                <button class="d-sm-none btn btn-tool text-warning" wire:click="cerrarBusqueda">
+                    <i class="fas fa-times"></i>
                 </button>
             @else
-                Todos [ <b class="text-primary">{{ $rowsUsuarios }}</b> ]
+                Todos [ <b class="text-warning">{{ $rows }}</b> ]
             @endif
         </h3>
 
         <div class="card-tools">
+            @if($keyword)
+                <button class="d-none d-sm-inline-block btn btn-tool text-warning" wire:click="cerrarBusqueda">
+                    <i class="fas fa-times"></i>
+                </button>
+            @endif
             <button type="button" class="btn btn-tool" wire:click="actualizar">
                 <i class="fas fa-sync-alt"></i>
             </button>
-            @if(comprobarPermisos('usuarios.excel'))
+            @if(comprobarPermisos('dashboard.usuarios.excel'))
                 <a href="{{ route('dashboard.usuarios.excel', $keyword) }}" class="btn btn-tool text-success" onclick="toastBootstrap({ toast: 'toast', type: 'info', message: 'Descargando Archivo.'})">
                     <i class="fas fa-file-excel"></i> <i class="fas fa-download"></i>
                 </a>
             @endif
-            @if(comprobarPermisos('usuarios.create'))
-                <button class="btn btn-tool" data-toggle="modal" data-target="#modal-default" wire:click="limpiar">
-                    <i class="fas fa-file"></i> Nuevo
-                </button>
-            @else
-                <button class="btn btn-tool disabled">
-                    <i class="fas fa-file"></i> Nuevo
-                </button>
-            @endif
-            <button type="button" class="btn btn-tool" wire:click="setLimit" @if($rows >= $rowsUsuarios) disabled @endif >
+            <button class="btn btn-tool" wire:click="create" @if(!comprobarPermisos('usuarios.create')) disabled @endif>
+                <i class="fas fa-file"></i> Nuevo
+            </button>
+            <button type="button" class="btn btn-tool" wire:click="setLimit" @if($btnDisabled) disabled @endif >
                 <i class="fas fa-sort-amount-down-alt"></i> Ver más
             </button>
         </div>
+
     </div>
 
-    <div class="card-body table-responsive p-0" @if($tableStyle) style="height: 68vh;" @endif >
+    <div class="card-body table-responsive p-0" wire:loading.class="invisible" wire:target="create, edit, showHide" style="max-height: calc(100vh - {{ $size }}px)">
         <table class="table table-sm table-head-fixed table-hover text-nowrap">
             <thead>
-            <tr class="text-navy">
-                <th class="text-center"><i class="fas fa-cloud"></i></th>
-                <th>Nombre</th>
-                <th class="d-none d-lg-table-cell">Email</th>
-                <th class="d-none d-lg-table-cell text-center">Rol</th>
-                <th class="text-center"><span class="d-none d-md-block">Estatus</span></th>
-                <th class="d-none d-lg-table-cell text-right">Creado</th>
-                <th style="width: 5%;">&nbsp;</th>
+            <tr class="text-lightblue">
+                <th class="text-center text-uppercase" style="width: 5%">#</th>
+                <th class="d-none d-lg-table-cell text-center text-uppercase" style="width: 5%"><i class="fas fa-cloud"></i></th>
+                <th class="text-uppercase">nombre</th>
+                <th class="d-none d-lg-table-cell text-uppercase">Email</th>
+                <th class="d-none d-lg-table-cell text-uppercase">&nbsp;</th>
+                <th class="d-none d-sm-table-cell text-uppercase text-center">Rol</th>
+                <th class="d-none d-sm-table-cell d-md-none d-lg-table-cell text-uppercase" style="width: 5%">Estatus</th>
+                <th class="text-center" style="width: 5%;"><small>Rows {{ $listarUsuarios->count() }}</small></th>
             </tr>
             </thead>
-            <tbody>
-            @if($listarUsers->isNotEmpty())
-                @foreach($listarUsers as $user)
-                    @if($user->role == 100 && auth()->user()->role != 100) @continue @endif
+            <tbody id="tbody_usuarios" wire:loading.class="invisible" wire:target="actualizar, cerrarBusqueda, setLimit">
+            @if($listarUsuarios->isNotEmpty())
+                @php($i = 0)
+                @foreach($listarUsuarios as $user)
                     <tr>
-                        <td class="text-center">
+                        <td class="align-middle text-bold text-center">{{ ++$i }}</td>
+                        <td class="align-middle d-none d-lg-table-cell text-bold text-center">
                             @if($user->plataforma)
                                 <i class="fas fa-mobile-alt"></i>
                             @else
                                 <i class="fas fa-desktop"></i>
                             @endif
                         </td>
-                        <td class="text-truncate" style="max-width: 150px;">{{ ucwords($user->name) }}</td>
-                        <td class="d-none d-lg-table-cell text-lowercase text-truncate" style="max-width: 150px;">{{ $user->email }}</td>
-                        <td class="d-none d-lg-table-cell text-center">{{ verRole($user->role, $user->roles_id) }}</td>
-                        <td class="text-center">
-                            {!! $this->getEstatusUsuario($user->estatus, true) !!}
-                            @if(auth()->user()->role == 100)
-                                <span class="d-none d-lg-inline text-sm"> ID: {{ $user->id }}</span>
+                        <td class="align-middle d-table-cell text-truncate text-uppercase" style="max-width: 150px;">{{ $user->name }}</td>
+                        <td class="align-middle d-none d-lg-table-cell text-truncate text-lowercase" style="max-width: 150px;">{{ $user->email }}</td>
+                        <td class="align-middle d-none d-lg-table-cell">
+                            @if($user->email_verified_at)
+                                <small><i class="fas fa-check-double text-success"></i></small>
                             @endif
                         </td>
-                        <td class="d-none d-lg-table-cell text-right">{{ haceCuanto($user->created_at)  }}</td>
+                        <td class="align-middle d-none d-sm-table-cell text-center">{{ verRole($user->role, $user->roles_id) }}</td>
+                        <td class="align-middle d-none d-sm-table-cell d-md-none d-lg-table-cell text-center">
+                            {!! $this->getEstatusUsuario($user->estatus, true) !!}
+                        </td>
                         <td class="justify-content-end">
-                            <div class="btn-group">
-                                <button wire:click="edit('{{ $user->rowquid }}')" class="btn btn-primary btn-sm"
-                                        data-toggle="modal" data-target="#modal-user-edit"
-                                        @if(!comprobarPermisos('usuarios.edit') || !($user->role != 1 || ($user->role ==1 && comprobarPermisos())) || ($user->id == auth()->id() && auth()->user()->role != 100)) disabled @endif>
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button wire:click="edit('{{ $user->rowquid }}')" class="btn btn-primary btn-sm"
-                                        data-toggle="modal" data-target="#modal-user-permisos" @if(!comprobarPermisos() || ($user->role == 1 && auth()->user()->role != 100)) disabled @endif>
-                                    <i class="fas fa-user-cog"></i>
+
+                            <div class="btn-group d-md-none">
+                                <button wire:click="showHide('{{ $user->rowquid }}')" class="btn btn-primary"
+                                        data-toggle="modal" data-target="#modal-default">
+                                    <i class="fas fa-eye"></i>
                                 </button>
                             </div>
+
+                            <div class="btn-group d-none d-md-flex">
+
+                                <button type="button" wire:click="show('{{ $user->rowquid }}')" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+
+                                <button type="button" wire:click="edit('{{ $user->rowquid }}')" class="btn btn-primary btn-sm"
+                                        @if($this->getComprobarPermisos($user)) disabled @endif >
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <button type="button" onclick="confirmToastBootstrap('delete',  { rowquid: '{{ $user->rowquid }}' })"  class="btn btn-primary btn-sm"
+                                        @if($this->getComprobarPermisos($user, 'usuarios.destroy')) disabled @endif >
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+
+                            </div>
+
                         </td>
                     </tr>
                 @endforeach
             @else
                 <tr class="text-center">
-                    <td colspan="7">
+                    <td colspan="8">
                         @if($keyword)
                             <span>Sin resultados</span>
                         @else
@@ -96,28 +118,15 @@
                     </td>
                 </tr>
             @endif
+
             </tbody>
         </table>
     </div>
 
-    <div class="card-footer">
-        <div class="row justify-content-between">
-            <small>Mostrando {{ $listarUsers->count() }}</small>
-            @if(comprobarPermisos())
-                <form class="d-md-none col-6 justify-content-end" id="sm_from_role_usuario">
-                    <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" placeholder="Nuevo Rol" id="sm_input_role_nombre" required>
-                        <span class="input-group-append">
-                        <button type="submit" class="btn btn-success btn-flat">
-                            <i class="fas fa-save"></i>
-                        </button>
-                    </span>
-                    </div>
-                </form>
-            @endif
-        </div>
+    <div class="card-footer" wire:loading.class="invisible" wire:target="create, edit, showHide">
+        <small>Mostrando {{ $listarUsuarios->count() }}</small>
     </div>
 
-    {!! verSpinner() !!}
+    {!! verSpinner('actualizar, cerrarBusqueda, setLimit, create, edit, showHide') !!}
 
 </div>

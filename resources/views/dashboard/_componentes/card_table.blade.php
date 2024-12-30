@@ -49,16 +49,16 @@
             @if(/*$ListarParametros->isNotEmpty()*/false)
                 @foreach($ListarParametros as $parametro)
                     <tr>
-                        <td class="text-bold text-center">{{ $parametro->id }}</td>
-                        <td class="d-table-cell text-truncate" style="max-width: 150px;">{{ $parametro->nombre }}</td>
-                        <td class="d-none d-md-table-cell">
+                        <td class="align-middle text-bold text-center">{{ $parametro->id }}</td>
+                        <td class="align-middle d-table-cell text-truncate" style="max-width: 150px;">{{ $parametro->nombre }}</td>
+                        <td class="align-middle d-none d-md-table-cell">
                             @if(is_null($parametro->tabla_id))
                                 null
                             @else
                                 {{ $parametro->tabla_id }}
                             @endif
                         </td>
-                        <td class="d-none d-md-table-cell text-truncate" style="max-width: 150px;">
+                        <td class="align-middle d-none d-md-table-cell text-truncate" style="max-width: 150px;">
                             @if(is_null($parametro->valor))
                                 null
                             @else
@@ -70,7 +70,16 @@
                             @endif
                         </td>
                         <td class="justify-content-end">
-                            <div class="btn-group">
+
+                            <div class="btn-group d-md-none">
+                                <button wire:click="edit('{{ $parametro->rowquid }}')" class="btn btn-primary"
+                                        data-toggle="modal" data-target="#modal-default">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <div class="btn-group d-none d-md-flex">
+
                                 <button wire:click="edit('{{ $parametro->rowquid }}')" class="btn btn-primary btn-sm"
                                         data-toggle="modal" data-target="#modal-default">
                                     <i class="fas fa-edit"></i>
@@ -80,7 +89,9 @@
                                         class="btn btn-primary btn-sm">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
+
                             </div>
+
                         </td>
                     </tr>
                 @endforeach

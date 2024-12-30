@@ -17,9 +17,7 @@ class UsuariosController extends Controller
 
     public function index()
     {
-        $parametros = Parametro::where('tabla_id', -1)->get();
-        return view('dashboard.usuarios.index')
-            ->with('smListarRoles', $parametros);
+        return view('dashboard.usuarios.index');
     }
 
     public function export($keyword = null)

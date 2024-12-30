@@ -20,12 +20,12 @@ function allPermisos()
         'Usuarios' => [
             'route' => $dashboard.'usuarios',
             'submenu' => [
+                'Exportar Excel' => $dashboard.'usuarios.excel',
+                'Suspender Usuarios' => $dashboard.'usuarios.estatus',
+                'Restituir Contraseña' => $dashboard.'usuarios.password',
                 'Crear Usuarios' => $dashboard.'usuarios.create',
                 'Editar Usuarios' => $dashboard.'usuarios.edit',
-                'Suspender Usuarios' => $dashboard.'usuarios.estatus',
-                'Reestablecer Contraseña' => $dashboard.'usuarios.password',
-                'Descargar Excel' => $dashboard.'usuarios.excel',
-                'Eliminar Usuarios' => $dashboard.'usuarios.destroy',
+                'Borrar Usuarios' => $dashboard.'usuarios.destroy',
             ]
         ],
     ];
