@@ -24,12 +24,7 @@
             <button type="button" class="btn btn-tool" wire:click="actualizar">
                 <i class="fas fa-sync-alt"></i>
             </button>
-            @if(comprobarPermisos('dashboard.usuarios.excel'))
-                <a href="{{ route('dashboard.usuarios.excel', $keyword) }}" class="btn btn-tool text-success" onclick="toastBootstrap({ toast: 'toast', type: 'info', message: 'Descargando Archivo.'})">
-                    <i class="fas fa-file-excel"></i> <i class="fas fa-download"></i>
-                </a>
-            @endif
-            <button class="btn btn-tool" wire:click="create" @if(!comprobarPermisos('usuarios.create')) disabled @endif>
+            <button class="btn btn-tool" wire:click="create" @if(!comprobarPermisos('dashboard.usuarios.create')) disabled @endif>
                 <i class="fas fa-file"></i> Nuevo
             </button>
             <button type="button" class="btn btn-tool" wire:click="setLimit" @if($btnDisabled) disabled @endif >
@@ -98,7 +93,7 @@
                                 </button>
 
                                 <button type="button" onclick="confirmToastBootstrap('delete',  { rowquid: '{{ $user->rowquid }}' })"  class="btn btn-primary btn-sm"
-                                        @if($this->getComprobarPermisos($user, 'usuarios.destroy')) disabled @endif >
+                                        @if($this->getComprobarPermisos($user, 'dashboard.usuarios.destroy')) disabled @endif >
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
 

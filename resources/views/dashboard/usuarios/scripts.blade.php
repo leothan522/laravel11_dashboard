@@ -9,6 +9,9 @@
             let keyword  = input.val();
             if (keyword.length > 0){
                 input.blur();
+                let url = "{{ route('dashboard.usuarios.excel', 'keyword') }}";
+                document.querySelector("#btn_header_exportar_excel").href = url.replace("keyword", keyword);
+                //document.querySelector("#btn_movile_exportar_excel").href = url.replace("keyword", keyword);
                 Livewire.dispatch('buscar', { keyword: keyword });
             }
             return false;
