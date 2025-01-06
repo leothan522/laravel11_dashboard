@@ -74,7 +74,7 @@
                 </button>
             </div>
             <div class="col-6">
-                <button type="button" wire:click="resetPassword" class="btn btn-secondary btn-block" @if(!$users_id || $btnReset) disabled @endif>
+                <button type="button" @if($newPassword) wire:click="resetPassword" @else onclick="confirmToastBootstrap('resetPassword', 'NoParametros', { toast: false, type: 'warning', button: '¡Sí, restablecer!' })" @endif class="btn btn-secondary btn-block" @if(!$users_id || $btnReset) disabled @endif>
                     <b>
                         <span class="text-nowrap">Restablecer</span>
                         <br>

@@ -43,6 +43,10 @@
             addClassinvisible('#div_footer_roles');
             Livewire.dispatch('showPermisos', { rowquid: rowquid });
         }
+		
+		Livewire.on('resetPassword', () => {
+            verCargando('div_show_user');
+        });
 
         console.log('Hi!');
     </script>

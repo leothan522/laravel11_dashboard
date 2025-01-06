@@ -249,6 +249,7 @@ class UsuariosComponent extends Component
         }
     }
 
+	#[On('resetPassword')]
     public function resetPassword()
     {
         $user = User::find($this->users_id);
